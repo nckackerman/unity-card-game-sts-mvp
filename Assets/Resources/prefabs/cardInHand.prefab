@@ -89,7 +89,7 @@ GameObject:
   - component: {fileID: 3343304033592635549}
   - component: {fileID: 1235116561434340132}
   - component: {fileID: 9003054474756308675}
-  - component: {fileID: 6483173779548322535}
+  - component: {fileID: -7771857061903241849}
   - component: {fileID: -7003351134748562579}
   m_Layer: 5
   m_Name: cardInHand
@@ -155,7 +155,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &6483173779548322535
+--- !u!114 &-7771857061903241849
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -164,7 +164,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2604467181489622442}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a22ad6c6080337243854762c770b58c7, type: 3}
+  m_Script: {fileID: 11500000, guid: 93483c8fdd191e1418968c997f2ed404, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &-7003351134748562579
@@ -184,7 +184,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 6483173779548322535}
+        - m_Target: {fileID: -7771857061903241849}
           m_MethodName: onDragStart
           m_Mode: 1
           m_Arguments:
@@ -199,7 +199,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 6483173779548322535}
+        - m_Target: {fileID: -7771857061903241849}
           m_MethodName: onDragEnd
           m_Mode: 1
           m_Arguments:

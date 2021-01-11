@@ -7,9 +7,14 @@ public class FightManagerService : MonoBehaviour
 {
 
     static int fightCount = 0;
+    private static Enemy currEnemy = null;
+    private static EnemyTurn currEnemyTurn = null;
+    private int turnCount = 0;
+
 
     public void startNewRun()
     {
+        fightCount = 0;
         DeckState.initDeck();
         PlayerState.initialize();
         startFight();
@@ -20,7 +25,7 @@ public class FightManagerService : MonoBehaviour
         PlayerState.currEnergy = 3;
         PlayerState.currBlock = 0;
         fightCount++;
-        EnemyState.initialize(fightCount);
+        currEnemy = fightCount < 2 ? EnemyTypes.getBasicEnemy() : EnemyTypes.getBoss();
 
         UiManager.startScene.SetActive(false);
         UiManager.gameOverScene.SetActive(false);
@@ -31,34 +36,34 @@ public class FightManagerService : MonoBehaviour
         DeckState.drawNewHand();
 
         UiManager.updatePlayerUiFields();
-        UiManager.updateEnemyFields();
+
+        turnCount = 0;
+        currEnemyTurn = currEnemy.getEnemyTurn(turnCount);
+        UiManager.updateEnemyFields(currEnemy);
+        UiManager.updateEnemyIntent(currEnemyTurn);
     }
 
     public void endTurn()
     {
         DeckState.discardHand(true);
-        enemyTurn();
+        turnCount++;
+        enemyTurn(currEnemyTurn);
 
         PlayerState.currEnergy = 3;
 
         UiManager.updatePlayerUiFields();
-        UiManager.updateEnemyFields();
+        UiManager.updateEnemyFields(currEnemy);
+        currEnemyTurn = currEnemy.getEnemyTurn(turnCount);
+        UiManager.updateEnemyIntent(currEnemyTurn);
     }
 
-    private void enemyTurn()
+    private void enemyTurn(EnemyTurn enemyTurn)
     {
-        PlayerState.takeHit(EnemyState.attackIntent);
-        EnemyState.currBlock = EnemyState.blockIntent;
-
-        float random = Random.Range(1, 10);
-        if (random > 5)
+        for (int i = 0; i < enemyTurn.attackMultiplier; i++)
         {
-            EnemyState.blockIntent++;
+            PlayerState.takeHit(enemyTurn.attackIntent);
         }
-        else
-        {
-            EnemyState.attackIntent++;
-        }
+        currEnemy.currBlock = enemyTurn.blockIntent;
 
         if (PlayerState.currHealth <= 0)
         {
@@ -69,12 +74,12 @@ public class FightManagerService : MonoBehaviour
     public static void onCardPlayed(Card card)
     {
         DeckState.playCard(card);
-        EnemyState.takeHit(card.attack);
+        currEnemy.takeHit(card.attack);
         PlayerState.currEnergy -= card.energyCost;
         PlayerState.currBlock += card.defend;
         for (int i = 0; i < card.cardsToDraw; i++)
         {
-            Card drawnCard = DeckState.RandomCardFromDeck();
+            Card drawnCard = DeckState.randomCardFromDeck();
             if (drawnCard != null)
             {
                 DeckState.hand.Add(drawnCard);
@@ -83,12 +88,12 @@ public class FightManagerService : MonoBehaviour
         }
 
 
-        if (EnemyState.currHealth <= 0)
+        if (currEnemy.currHealth <= 0)
         {
             onEnemyDefeat();
         }
         UiManager.updatePlayerUiFields();
-        UiManager.updateEnemyFields();
+        UiManager.updateEnemyFields(currEnemy);
     }
 
     private static void onEnemyDefeat()

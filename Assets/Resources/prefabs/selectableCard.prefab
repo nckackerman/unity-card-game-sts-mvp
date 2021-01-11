@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 640974651493105088}
   - component: {fileID: 4009608523210237561}
   - component: {fileID: 6517192559930569630}
+  - component: {fileID: 3742312792514306506}
   - component: {fileID: 7437084591671725274}
-  - component: {fileID: 7229182944864196011}
   m_Layer: 5
   m_Name: selectableCard
   m_TagString: Untagged
@@ -77,6 +77,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &3742312792514306506
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 190298355148505335}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d15e11b1adf02674aacc61725dca23cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &7437084591671725274
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -94,7 +106,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 7229182944864196011}
+        - m_Target: {fileID: 3742312792514306506}
           m_MethodName: onClick
           m_Mode: 1
           m_Arguments:
@@ -105,18 +117,6 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
---- !u!114 &7229182944864196011
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 190298355148505335}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c5788589b128dcc4ba5fd68905b75896, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &2512241578313816348
 GameObject:
   m_ObjectHideFlags: 0

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class UiManager : MonoBehaviour
 {
 
-    private static GameObject handCardPrefab;
+    private static GameObject cardInHandPrefab;
     private static GameObject selectableCardPrefab;
     public static Text deckText;
     public static Text playerHealthText;
@@ -61,7 +61,7 @@ public class UiManager : MonoBehaviour
         cardListScene.SetActive(false);
 
         //cards
-        handCardPrefab = Resources.Load("prefabs/cardInHand") as GameObject;
+        cardInHandPrefab = Resources.Load("prefabs/cardInHand") as GameObject;
         selectableCardPrefab = Resources.Load("prefabs/selectableCard") as GameObject;
     }
 
@@ -74,13 +74,21 @@ public class UiManager : MonoBehaviour
         playerEnergyText.text = "Energy: " + PlayerState.currEnergy.ToString();
     }
 
-    public static void updateEnemyFields()
+    public static void updateEnemyFields(Enemy currEnemy)
     {
-        enemyHealth.text = EnemyState.currHealth.ToString() + "/" + EnemyState.maxHealth.ToString();
-        enemyHealth.text = EnemyState.currHealth.ToString() + "/" + EnemyState.maxHealth.ToString();
-        enemyBlockIntent.text = "Block: " + EnemyState.blockIntent.ToString();
-        enemyAttackIntent.text = "Attack: " + EnemyState.attackIntent.ToString();
-        enemyBlock.text = "Block: " + EnemyState.currBlock.ToString();
+        enemyHealth.text = currEnemy.currHealth.ToString() + "/" + currEnemy.maxHealth.ToString();
+        enemyHealth.text = currEnemy.currHealth.ToString() + "/" + currEnemy.maxHealth.ToString();
+        enemyBlock.text = "Block: " + currEnemy.currBlock.ToString();
+    }
+
+    public static void updateEnemyIntent(EnemyTurn enemyTurn)
+    {
+        enemyBlockIntent.text = "Block: " + enemyTurn.blockIntent.ToString();
+        enemyAttackIntent.text = "Attack: " + enemyTurn.attackIntent.ToString();
+        if (enemyTurn.attackMultiplier > 1)
+        {
+            enemyAttackIntent.text += " x " + enemyTurn.attackMultiplier.ToString();
+        }
     }
 
     public static void showHand()
@@ -94,10 +102,10 @@ public class UiManager : MonoBehaviour
 
     public static void showCardInHand(Card card)
     {
-        GameObject cardInHandInstance = getCardObject(card, handCardPrefab);
+        GameObject cardInHandInstance = getCardObject(card, cardInHandPrefab);
         card.cardPrefab = cardInHandInstance;
         cardInHandInstance.transform.SetParent(playerHand.transform);
-        cardInHandInstance.GetComponent<playerCardDragDrop>().card = card;
+        cardInHandInstance.GetComponent<PlayerCardDragDrop>().card = card;
     }
 
     public static void destroyPlayerCardUi()
@@ -113,7 +121,7 @@ public class UiManager : MonoBehaviour
         cardListScene.SetActive(true);
         foreach (Card card in cards)
         {
-            GameObject cardInHandInstance = getCardObject(card, handCardPrefab);
+            GameObject cardInHandInstance = getCardObject(card, cardInHandPrefab);
             cardInHandInstance.transform.SetParent(cardListGrid.transform);
         }
     }
@@ -126,7 +134,7 @@ public class UiManager : MonoBehaviour
             GameObject selectableCard = getCardObject(card, selectableCardPrefab);
             card.cardPrefab = selectableCard;
             selectableCard.transform.SetParent(cardSelect.transform);
-            selectableCard.GetComponent<cardSelect>().card = card;
+            selectableCard.GetComponent<CardSelect>().card = card;
         }
     }
 

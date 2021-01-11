@@ -9,12 +9,6 @@ public static class DeckState
     public static List<Card> discardCards = new List<Card>();
     public static List<Card> hand = new List<Card>();
 
-    private static Card drawCard = new Card();
-    private static Card betterDefense = new Card();
-    private static Card betterAttack = new Card();
-    private static Card basicDefense = new Card();
-    private static Card basicAttack = new Card();
-
     public static void initDeck()
     {
         deckCards = new List<Card>();
@@ -22,40 +16,29 @@ public static class DeckState
         hand = new List<Card>();
         UiManager.destroyPlayerCardUi();
 
-        basicAttack.attack = 5;
-        basicAttack.energyCost = 1;
-        basicDefense.defend = 5;
-        basicDefense.energyCost = 1;
-        betterAttack.attack = 13;
-        betterAttack.energyCost = 2;
-
-        betterDefense.defend = 13;
-        betterDefense.energyCost = 2;
-        drawCard.cardsToDraw = 2;
-        drawCard.energyCost = 1;
         for (int i = 0; i < 7; i++)
         {
             if (i < 3)
             {
-                deckCards.Add(basicAttack);
-                deckCards.Add(basicDefense);
+                deckCards.Add(CardTypes.getBasicAttack());
+                deckCards.Add(CardTypes.getBasicDefend());
             }
             else if (i == 3)
             {
-                deckCards.Add(betterAttack);
-                deckCards.Add(betterDefense);
-                deckCards.Add(drawCard);
+                deckCards.Add(CardTypes.getBetterAttack());
+                deckCards.Add(CardTypes.getBetterDefense());
+                deckCards.Add(CardTypes.getDrawCard());
             }
             else
             {
                 float random = Random.Range(0, 2);
                 if (random > 1)
                 {
-                    deckCards.Add(betterAttack);
+                    deckCards.Add(CardTypes.getBetterAttack());
                 }
                 else
                 {
-                    deckCards.Add(betterDefense);
+                    deckCards.Add(CardTypes.getBetterDefense());
                 }
             }
         }
@@ -66,7 +49,7 @@ public static class DeckState
 
         for (int i = 0; i < 5; i++)
         {
-            Card drawnCard = RandomCardFromDeck();
+            Card drawnCard = randomCardFromDeck();
             if (drawnCard != null)
             {
                 hand.Add(drawnCard);
@@ -87,7 +70,7 @@ public static class DeckState
             deckCards.Add(card);
         }
     }
-    public static Card RandomCardFromDeck()
+    public static Card randomCardFromDeck()
     {
         if (deckCards.Count == 0)
         {
@@ -130,9 +113,9 @@ public static class DeckState
     public static List<Card> generateCards(int numCardsToGenerate)
     {
         List<Card> cards = new List<Card>();
-        cards.Add(drawCard);
-        cards.Add(betterAttack);
-        cards.Add(betterDefense);
+        cards.Add(CardTypes.getBetterAttack());
+        cards.Add(CardTypes.getBetterDefense());
+        cards.Add(CardTypes.getDrawCard());
         return cards;
     }
 

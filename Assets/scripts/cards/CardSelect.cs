@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class cardSelect : MonoBehaviour
+public class CardSelect : MonoBehaviour
 {
 
     public Card card;

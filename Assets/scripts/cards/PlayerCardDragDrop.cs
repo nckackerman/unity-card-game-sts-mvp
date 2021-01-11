@@ -3,18 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class playerCardDragDrop : MonoBehaviour
+public class PlayerCardDragDrop : MonoBehaviour
 {
     private bool isDragging = false;
     private Vector2 startPosition;
     public Card card;
+
+    private int yPositionForCardPlay = 250;
 
     public void onDragStart()
     {
         startPosition = transform.position;
         if (card.energyCost > PlayerState.currEnergy)
         {
-            gameObject.GetComponent<Image>().color = new Color32(255, 200, 200, 255);
+            gameObject.GetComponent<Image>().color = ColorUtils.cardDefault;
             return;
         }
         isDragging = true;
@@ -23,7 +25,7 @@ public class playerCardDragDrop : MonoBehaviour
     public void onDragEnd()
     {
         isDragging = false;
-        if (transform.position.y > 250)
+        if (transform.position.y >= yPositionForCardPlay)
         {
             FightManagerService.onCardPlayed(card);
             Destroy(gameObject);
@@ -40,13 +42,13 @@ public class playerCardDragDrop : MonoBehaviour
         {
             return;
         }
-        if (transform.position.y > 250)
+        if (transform.position.y >= yPositionForCardPlay)
         {
-            gameObject.GetComponent<Image>().color = new Color32(210, 240, 180, 255);
+            gameObject.GetComponent<Image>().color = ColorUtils.cardPlayedGreen;
         }
         else
         {
-            gameObject.GetComponent<Image>().color = new Color32(255, 255, 255, 255);
+            gameObject.GetComponent<Image>().color = ColorUtils.white;
         }
 
         transform.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
