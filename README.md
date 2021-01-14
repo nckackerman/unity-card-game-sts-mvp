@@ -8,6 +8,14 @@ Absolutly! Please reach out to nckackerman@gmail.com for any question about this
 
 ## Updates
 
+### 1/14/2021
+
+Added POC/MVP sprites+animations to game. Thanks to PixelFrog for providing the asstes on Unities Free section [here](https://assetstore.unity.com/packages/2d/characters/pixel-adventure-1-155360)
+
+Whats Next?
+- Incorporating some time of "relics" into gameplay. Example: the second attack played each turn hits twice.
+- Add some POC/MVP sound bites. Example: some sort of "hit" sound when a card is played.
+
 ### 1/11/2021 
 
 The very basic gameloop is working. Funtionality includes:
