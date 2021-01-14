@@ -9,7 +9,10 @@ public class PlayerCardDragDrop : MonoBehaviour
     private Vector2 startPosition;
     public Card card;
 
-    private int yPositionForCardPlay = 250;
+    private int yPositionForCardPlay = -250;
+    private float startYposDrag = 0;
+    private float startXposDrag = 0;
+
 
     public void onDragStart()
     {
@@ -19,6 +22,8 @@ public class PlayerCardDragDrop : MonoBehaviour
             gameObject.GetComponent<Image>().color = ColorUtils.cardDefault;
             return;
         }
+        startYposDrag = Input.mousePosition.y;
+        startXposDrag = Input.mousePosition.x;
         isDragging = true;
     }
 
@@ -50,7 +55,7 @@ public class PlayerCardDragDrop : MonoBehaviour
         {
             gameObject.GetComponent<Image>().color = ColorUtils.white;
         }
-
-        transform.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+        RectTransform playerHandTransform = gameObject.transform.parent.GetComponent<RectTransform>();
+        transform.localPosition = new Vector2(Input.mousePosition.x - Screen.width / 2, Input.mousePosition.y - playerHandTransform.rect.height / 2);
     }
 }

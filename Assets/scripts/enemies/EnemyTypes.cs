@@ -1,4 +1,8 @@
+using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEditor.Animations;
+using UnityEngine.UI;
 public static class EnemyTypes
 {
     public static Enemy getBasicEnemy()
@@ -9,6 +13,8 @@ public static class EnemyTypes
         basicEnemy.enemyTurns.Add(new EnemyTurn(0, 10));
         basicEnemy.enemyTurns.Add(new EnemyTurn(6, 6));
         basicEnemy.randomAttackOrder = true;
+        basicEnemy.sprite = Resources.Load<Sprite>("sprites/MaskDude/Fall (32x32)");
+        basicEnemy.animatorController = Resources.Load<RuntimeAnimatorController>("sprites/MaskDude/MaskManController");
 
         basicEnemy.initialize();
         return basicEnemy;
@@ -24,6 +30,8 @@ public static class EnemyTypes
             turn.attackMultiplier = 2 + i;
             bossEnemy.enemyTurns.Add(turn);
         }
+        bossEnemy.sprite = Resources.Load<Sprite>("sprites/MaskDude/Jump (32x32)");
+        bossEnemy.animatorController = Resources.Load<RuntimeAnimatorController>("sprites/MaskDude/MaskManController");
 
         bossEnemy.initialize();
         return bossEnemy;

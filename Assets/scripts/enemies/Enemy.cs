@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor.Animations;
 
 public class Enemy
 {
@@ -9,6 +10,8 @@ public class Enemy
     public int currBlock;
     public List<EnemyTurn> enemyTurns = new List<EnemyTurn>();
     public bool randomAttackOrder = false;
+    public Sprite sprite;
+    public RuntimeAnimatorController animatorController;
 
     public void initialize()
     {

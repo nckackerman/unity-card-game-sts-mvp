@@ -26,6 +26,7 @@ public class FightManagerService : MonoBehaviour
         PlayerState.currBlock = 0;
         fightCount++;
         currEnemy = fightCount < 2 ? EnemyTypes.getBasicEnemy() : EnemyTypes.getBoss();
+        Vector3 enemyScale = fightCount < 2 ? new Vector3(50, 50, 1) : new Vector3(75, 75, 1);
 
         UiManager.startScene.SetActive(false);
         UiManager.gameOverScene.SetActive(false);
@@ -41,6 +42,8 @@ public class FightManagerService : MonoBehaviour
         currEnemyTurn = currEnemy.getEnemyTurn(turnCount);
         UiManager.updateEnemyFields(currEnemy);
         UiManager.updateEnemyIntent(currEnemyTurn);
+        SpriteManager.showEnemy(currEnemy);
+        SpriteManager.scaleEnemy(enemyScale);
     }
 
     public void endTurn()
@@ -103,6 +106,7 @@ public class FightManagerService : MonoBehaviour
 
         UiManager.victoryScene.SetActive(true);
         UiManager.showCardSelectUi(DeckState.generateCards(3));
+        SpriteManager.hideEnemy();
     }
 
     private void onPlayerDefeat()
