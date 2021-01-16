@@ -23,11 +23,14 @@ public class UiManager : MonoBehaviour
 
     public static GameObject cardListScene;
     public static GameObject cardSelect;
+    public static GameObject upgradeSelect;
     public static GameObject cardListGrid;
     public static GameObject fightScene;
     public static GameObject victoryScene;
     public static GameObject gameOverScene;
     public static GameObject startScene;
+    public static GameObject upgradeList;
+    public static GameObject upgradePrefab;
 
     // Start is called before the first frame update
     void Start()
@@ -55,14 +58,19 @@ public class UiManager : MonoBehaviour
         fightScene.SetActive(false);
         victoryScene = GameObject.Find("victoryScene");
         cardSelect = GameObject.Find("cardSelect");
+        upgradeSelect = GameObject.Find("upgradeSelect");
         victoryScene.SetActive(false);
         cardListScene = GameObject.Find("cardListScene");
         cardListGrid = GameObject.Find("cardList");
         cardListScene.SetActive(false);
 
+        upgradeList = GameObject.Find("UpgradeList");
+
         //cards
-        cardInHandPrefab = Resources.Load("prefabs/cardInHand") as GameObject;
-        selectableCardPrefab = Resources.Load("prefabs/selectableCard") as GameObject;
+        string prefabPath = "prefabs/";
+        cardInHandPrefab = Resources.Load(prefabPath + "cardInHand") as GameObject;
+        selectableCardPrefab = Resources.Load(prefabPath + "selectableCard") as GameObject;
+        upgradePrefab = Resources.Load(prefabPath + "upgradeObject") as GameObject;
     }
 
     public static void updatePlayerUiFields()
@@ -128,6 +136,7 @@ public class UiManager : MonoBehaviour
 
     public static void showCardSelectUi(List<Card> cards)
     {
+        destroyCardSelect();
         cardSelect.SetActive(true);
         foreach (Card card in cards)
         {
@@ -135,6 +144,33 @@ public class UiManager : MonoBehaviour
             card.cardPrefab = selectableCard;
             selectableCard.transform.SetParent(cardSelect.transform);
             selectableCard.GetComponent<CardSelect>().card = card;
+        }
+    }
+
+    public static void showUpgradeSelectUi(List<Upgrade> upgrades)
+    {
+        destroyCardSelectUi();
+        upgradeSelect.SetActive(true);
+        foreach (Upgrade upgrade in upgrades)
+        {
+            GameObject upgradeInstance = Instantiate(upgradePrefab, new Vector3(0, 0, 0), Quaternion.identity);
+            UpgradeGameObject upgradeGameObject = upgradeInstance.GetComponentInChildren<UpgradeGameObject>();
+            upgradeGameObject.initUpgradeData(upgrade);
+            upgradeGameObject.onClickAction = () =>
+            {
+                UpgradeState.addUpgrade(upgrade);
+                upgradeSelect.SetActive(false);
+                destroyCardSelectUi();
+            };
+            upgradeInstance.transform.SetParent(upgradeSelect.transform);
+        }
+    }
+
+    public static void destroyCardSelectUi()
+    {
+        foreach (Transform child in upgradeSelect.transform)
+        {
+            GameObject.Destroy(child.gameObject);
         }
     }
 
@@ -152,5 +188,12 @@ public class UiManager : MonoBehaviour
         {
             GameObject.Destroy(child.gameObject);
         }
+    }
+
+    public static void addUpgrade(Upgrade upgrade)
+    {
+        GameObject upgradeInstance = Instantiate(upgradePrefab, new Vector3(0, 0, 0), Quaternion.identity);
+        upgradeInstance.GetComponentInChildren<UpgradeGameObject>().initUpgradeData(upgrade);
+        upgradeInstance.transform.SetParent(upgradeList.transform);
     }
 }

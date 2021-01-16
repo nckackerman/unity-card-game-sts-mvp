@@ -11,18 +11,19 @@ public class FightManagerService : MonoBehaviour
     private static EnemyTurn currEnemyTurn = null;
     private int turnCount = 0;
 
-
     public void startNewRun()
     {
         fightCount = 0;
         DeckState.initDeck();
         PlayerState.initialize();
+        UpgradeState.initUpgrades();
+
         startFight();
     }
 
     public void startFight()
     {
-        PlayerState.currEnergy = 3;
+        PlayerState.currEnergy = PlayerState.maxEnergy;
         PlayerState.currBlock = 0;
         fightCount++;
         currEnemy = fightCount < 2 ? EnemyTypes.getBasicEnemy() : EnemyTypes.getBoss();
@@ -44,6 +45,8 @@ public class FightManagerService : MonoBehaviour
         UiManager.updateEnemyIntent(currEnemyTurn);
         SpriteManager.showEnemy(currEnemy);
         SpriteManager.scaleEnemy(enemyScale);
+
+        UpgradeState.triggerCombatStartActions();
     }
 
     public void endTurn()
@@ -52,7 +55,7 @@ public class FightManagerService : MonoBehaviour
         turnCount++;
         enemyTurn(currEnemyTurn);
 
-        PlayerState.currEnergy = 3;
+        PlayerState.currEnergy = PlayerState.maxEnergy;
 
         UiManager.updatePlayerUiFields();
         UiManager.updateEnemyFields(currEnemy);
@@ -106,7 +109,20 @@ public class FightManagerService : MonoBehaviour
 
         UiManager.victoryScene.SetActive(true);
         UiManager.showCardSelectUi(DeckState.generateCards(3));
+        UiManager.showUpgradeSelectUi(UpgradeState.genRandomUpgrades(2));
         SpriteManager.hideEnemy();
+    }
+
+    public static void damageEnemy(int damage)
+    {
+        currEnemy.takeHit(damage);
+        UiManager.updateEnemyFields(currEnemy);
+    }
+
+    public static void addPlayerBlock(int block)
+    {
+        PlayerState.currBlock += block;
+        UiManager.updatePlayerUiFields();
     }
 
     private void onPlayerDefeat()
