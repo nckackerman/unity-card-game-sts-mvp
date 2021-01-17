@@ -1,4 +1,5 @@
-## Current Web Build Host on AWS [Here](http://deck-builder-demo-nckackerman.s3-website-us-east-1.amazonaws.com/)
+## Current Web Build Hosted on AWS [Here](http://deck-builder-demo-nckackerman.s3-website-us-east-1.amazonaws.com/)
+[Here](http://deck-builder-demo-nckackerman.s3-website-us-east-1.amazonaws.com/)
 
 ## Purpose
 This is a for-fun project to build a POC/MVP for a deckbuilder game in [Unity-2d](https://unity.com/solutions/2d) game engine. [Slay the Spire](https://store.steampowered.com/app/646570/Slay_the_Spire/) was taken as starting inspiration. The end goal is to get a playable demo up that doesnt look like it was made by someone brand new to game development.
