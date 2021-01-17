@@ -8,6 +8,18 @@ Absolutly! Please reach out to nckackerman@gmail.com for any question about this
 
 ## Updates
 
+### 1/17/2021
+
+Added POC/MVP for upgrades/relics. Functionality includes:
+- adding block at the start of combat
+- doing damage at the start of combat
+- increasing energy
+- increasing health
+
+Whats next?
+- After spending this much time in Unity, I'm finding ways I prefer to organize code. I'll be doing a larger refactoring next to make future code changes easier.
+- MVP/POC for sound bites.
+
 ### 1/14/2021
 
 Added POC/MVP sprites+animations to game. Thanks to PixelFrog for providing the asstes on Unities Free section [here](https://assetstore.unity.com/packages/2d/characters/pixel-adventure-1-155360)
