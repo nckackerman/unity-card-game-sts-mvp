@@ -1,22 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class Card
+﻿public class Card
 {
     public int energyCost = 0;
     public int attack = 0;
     public int defend = 0;
     public int cardsToDraw = 0;
-    public GameObject cardPrefab;
-
-    public void copyData(Card card)
-    {
-        this.attack = card.attack;
-        this.defend = card.defend;
-        this.energyCost = card.energyCost;
-        this.cardsToDraw = card.cardsToDraw;
-    }
 
     public string getCardText()
     {

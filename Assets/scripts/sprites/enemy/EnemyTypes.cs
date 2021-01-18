@@ -11,7 +11,6 @@ public static class EnemyTypes
         basicEnemy.enemyTurns.Add(new EnemyTurn(0, 10));
         basicEnemy.enemyTurns.Add(new EnemyTurn(6, 6));
         basicEnemy.randomAttackOrder = true;
-        basicEnemy.sprite = Resources.Load<Sprite>(spritePath + "Fall (32x32)");
         basicEnemy.animatorController = Resources.Load<RuntimeAnimatorController>(spritePath + "MaskManController");
 
         basicEnemy.initialize();
@@ -28,7 +27,6 @@ public static class EnemyTypes
             turn.attackMultiplier = 2 + i;
             bossEnemy.enemyTurns.Add(turn);
         }
-        bossEnemy.sprite = Resources.Load<Sprite>(spritePath + "Jump (32x32)");
         bossEnemy.animatorController = Resources.Load<RuntimeAnimatorController>(spritePath + "MaskManController");
 
         bossEnemy.initialize();

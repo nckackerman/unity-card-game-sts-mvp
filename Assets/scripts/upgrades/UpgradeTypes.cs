@@ -1,11 +1,10 @@
-using System;
 using UnityEngine;
 
-public static class UpgradeTypes
+public class UpgradeTypes
 {
     public static string spritePath = "sprites/upgrades/";
 
-    public static Upgrade getApple()
+    public Upgrade getApple(PlayerState playerState)
     {
         Upgrade apple = new Upgrade();
         apple.sprite = Resources.Load<Sprite>(spritePath + "Apple");
@@ -13,17 +12,17 @@ public static class UpgradeTypes
 
         apple.onPickupAction = () =>
         {
-            PlayerState.maxHealth += 10;
-            PlayerState.currHealth += 10;
+            playerState.maxHealth += 10;
+            playerState.currHealth += 10;
         };
         apple.onRemoveAction = () =>
         {
-            PlayerState.maxHealth -= 10;
+            playerState.maxHealth -= 10;
         };
         return apple;
     }
 
-    public static Upgrade getBanana()
+    public Upgrade getBanana(PlayerState playerState)
     {
         Upgrade banana = new Upgrade();
         banana.sprite = Resources.Load<Sprite>(spritePath + "Bananas");
@@ -31,18 +30,18 @@ public static class UpgradeTypes
 
         banana.onPickupAction = () =>
         {
-            PlayerState.maxEnergy += 1;
-            PlayerState.currEnergy += 1;
+            playerState.maxEnergy += 1;
+            playerState.currEnergy += 1;
         };
         banana.onRemoveAction = () =>
         {
-            PlayerState.maxEnergy -= 1;
-            PlayerState.currEnergy -= 1;
+            playerState.maxEnergy -= 1;
+            playerState.currEnergy -= 1;
         };
         return banana;
     }
 
-    public static Upgrade getCherry()
+    public Upgrade getCherry()
     {
         int firstTurnDamage = 5;
         Upgrade cherry = new Upgrade();
@@ -50,12 +49,12 @@ public static class UpgradeTypes
         cherry.description = "At the start of combat, deal " + firstTurnDamage + " damage to all enemies";
         cherry.onCombatStartAction = () =>
         {
-            FightManagerService.damageEnemy(firstTurnDamage);
+            FightManagerService.getInstance().damageEnemy(firstTurnDamage);
         };
         return cherry;
     }
 
-    public static Upgrade getKiwi()
+    public Upgrade getKiwi()
     {
         int firstTurnBlock = 5;
         Upgrade kiwi = new Upgrade();
@@ -63,30 +62,30 @@ public static class UpgradeTypes
         kiwi.description = "At the start of combat, gain " + firstTurnBlock + " block";
         kiwi.onCombatStartAction = () =>
         {
-            FightManagerService.addPlayerBlock(firstTurnBlock);
+            FightManagerService.getInstance().addPlayerBlock(firstTurnBlock);
         };
         return kiwi;
     }
 
-    public static Upgrade getMelon()
+    public Upgrade getMelon()
     {
         Upgrade melon = new Upgrade();
         return melon;
     }
 
-    public static Upgrade getOrange()
+    public Upgrade getOrange()
     {
         Upgrade orange = new Upgrade();
         return orange;
     }
 
-    public static Upgrade getPineapple()
+    public Upgrade getPineapple()
     {
         Upgrade pineApple = new Upgrade();
         return pineApple;
     }
 
-    public static Upgrade getStrawberry()
+    public Upgrade getStrawberry()
     {
         Upgrade strawberry = new Upgrade();
         return strawberry;

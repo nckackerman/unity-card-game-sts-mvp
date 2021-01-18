@@ -1,20 +1,18 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-public static class DeckState
+public class DeckState
 {
 
-    public static List<Card> deckCards = new List<Card>();
-    public static List<Card> discardCards = new List<Card>();
-    public static List<Card> hand = new List<Card>();
+    public List<Card> deckCards = new List<Card>();
+    public List<Card> discardCards = new List<Card>();
+    public List<Card> hand = new List<Card>();
 
-    public static void initDeck()
+    public void initDeck()
     {
         deckCards = new List<Card>();
         discardCards = new List<Card>();
         hand = new List<Card>();
-        UiManager.destroyPlayerCardUi();
 
         for (int i = 0; i < 7; i++)
         {
@@ -44,9 +42,19 @@ public static class DeckState
         }
     }
 
-    public static void drawNewHand()
+    public void startFight()
     {
+        drawNewHand();
+    }
 
+    public void endTurn()
+    {
+        discardHand();
+        drawNewHand();
+    }
+
+    public void drawNewHand()
+    {
         for (int i = 0; i < 5; i++)
         {
             Card drawnCard = randomCardFromDeck();
@@ -55,12 +63,9 @@ public static class DeckState
                 hand.Add(drawnCard);
             }
         }
-
-        UiManager.showHand();
-
     }
 
-    public static void shuffleDiscardIntoDeck()
+    public void shuffleDiscardIntoDeck()
     {
         while (discardCards.Count > 0)
         {
@@ -70,7 +75,7 @@ public static class DeckState
             deckCards.Add(card);
         }
     }
-    public static Card randomCardFromDeck()
+    public Card randomCardFromDeck()
     {
         if (deckCards.Count == 0)
         {
@@ -88,9 +93,8 @@ public static class DeckState
         return drawnCard;
     }
 
-    public static void discardHand(bool drawNew)
+    public void discardHand()
     {
-        UiManager.destroyPlayerCardUi();
         for (int i = 0; i < hand.Count; i++)
         {
             Card card = hand[i];
@@ -98,19 +102,26 @@ public static class DeckState
         }
 
         hand = new List<Card>();
-        if (drawNew)
+    }
+
+    public void playCard(Card card)
+    {
+        FightManagerService fightManagerService = FightManagerService.getInstance();
+        discardCards.Add(card);
+        hand.Remove(card);
+
+        for (int i = 0; i < card.cardsToDraw; i++)
         {
-            drawNewHand();
+            Card drawnCard = randomCardFromDeck();
+            if (drawnCard != null)
+            {
+                hand.Add(drawnCard);
+                fightManagerService.cardDrawn(drawnCard);
+            }
         }
     }
 
-    public static void playCard(Card card)
-    {
-        discardCards.Add(card);
-        hand.Remove(card);
-    }
-
-    public static List<Card> generateCards(int numCardsToGenerate)
+    public List<Card> generateCards(int numCardsToGenerate)
     {
         List<Card> cards = new List<Card>();
         cards.Add(CardTypes.getBetterAttack());
@@ -119,7 +130,7 @@ public static class DeckState
         return cards;
     }
 
-    public static void addCardToDeck(Card card)
+    public void addCardToDeck(Card card)
     {
         deckCards.Add(card);
     }

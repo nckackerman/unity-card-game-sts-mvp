@@ -1,22 +1,31 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
-public static class UpgradeState
+public class UpgradeState
 {
-    public static List<Upgrade> heldUpgrades = new List<Upgrade>();
-    public static List<Upgrade> upgradePool = new List<Upgrade>();
+    public List<Upgrade> heldUpgrades = new List<Upgrade>();
+    public List<Upgrade> upgradePool = new List<Upgrade>();
 
-    public static void initUpgrades()
+    private UpgradeTypes upgradeTypes;
+    private PlayerState playerState;
+
+    public UpgradeState(
+        UpgradeTypes upgradeTypes,
+        PlayerState playerState)
     {
-        upgradePool.Add(UpgradeTypes.getApple());
-        upgradePool.Add(UpgradeTypes.getBanana());
-        upgradePool.Add(UpgradeTypes.getCherry());
-        upgradePool.Add(UpgradeTypes.getKiwi());
+        this.upgradeTypes = upgradeTypes;
+        this.playerState = playerState;
     }
 
-    public static List<Upgrade> genRandomUpgrades(int numUpgrades)
+    public void initUpgrades()
+    {
+        upgradePool.Add(upgradeTypes.getApple(playerState));
+        upgradePool.Add(upgradeTypes.getBanana(playerState));
+        upgradePool.Add(upgradeTypes.getCherry());
+        upgradePool.Add(upgradeTypes.getKiwi());
+    }
+
+    public List<Upgrade> genRandomUpgrades(int numUpgrades)
     {
         List<Upgrade> poolCopy = new List<Upgrade>(upgradePool);
         List<Upgrade> upgrades = new List<Upgrade>();
@@ -34,22 +43,21 @@ public static class UpgradeState
         return upgrades;
     }
 
-    public static void addUpgrade(Upgrade upgrade)
+    public void addUpgrade(Upgrade upgrade)
     {
         upgrade.onPickup();
         heldUpgrades.Add(upgrade);
         upgradePool.Remove(upgrade);
-        UiManager.addUpgrade(upgrade);
     }
 
-    public static void removeUpgrade(Upgrade upgrade)
+    public void removeUpgrade(Upgrade upgrade)
     {
         upgrade.onRemove();
         heldUpgrades.Remove(upgrade);
         upgradePool.Add(upgrade);
     }
 
-    public static void triggerCombatStartActions()
+    public void triggerCombatStartActions()
     {
         foreach (Upgrade upgrade in heldUpgrades)
         {

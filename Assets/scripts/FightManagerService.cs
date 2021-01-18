@@ -1,157 +1,182 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.UI;
-using UnityEngine;
+﻿using UnityEngine;
+using System;
 
-public class FightManagerService : MonoBehaviour
+public class FightManagerService
 {
+    private PlayerState playerState;
+    private CardUiManager cardUiManager;
+    private EnemyUiManager enemyUiManager;
+    private PlayerUiManager playerUiManager;
+    private UpgradeUiManager upgradeUiManager;
+    private FightSceneUiManager fightSceneUiManager;
+    private SceneUiManager sceneUiManager;
+    private UpgradeState upgradeState;
+    private DeckState deckState;
 
-    static int fightCount = 0;
-    private static Enemy currEnemy = null;
-    private static EnemyTurn currEnemyTurn = null;
+    private int fightCount = 0;
+    private Enemy currEnemy = null;
+    private EnemyTurn currEnemyTurn = null;
     private int turnCount = 0;
+    private static FightManagerService fightManagerServiceInstance;
+
+    public static FightManagerService getInstance()
+    {
+        if (fightManagerServiceInstance == null)
+        {
+            throw new Exception("Error, attempted to retrieve a null fightManagerServiceInstance");
+        }
+        return fightManagerServiceInstance;
+    }
+
+    public static void setInstance(FightManagerService instance)
+    {
+        fightManagerServiceInstance = instance;
+    }
+
+    public FightManagerService(
+        CardUiManager cardUiManager,
+        EnemyUiManager enemyUiManager,
+        SceneUiManager sceneUiManager,
+        FightSceneUiManager fightSceneUiManager,
+        PlayerState playerState,
+        PlayerUiManager playerUiManager,
+        UpgradeUiManager upgradeUiManager,
+        DeckState deckState,
+        UpgradeState upgradeState)
+    {
+        this.cardUiManager = cardUiManager;
+        this.playerState = playerState;
+        this.enemyUiManager = enemyUiManager;
+        this.playerUiManager = playerUiManager;
+        this.fightSceneUiManager = fightSceneUiManager;
+        this.deckState = deckState;
+        this.sceneUiManager = sceneUiManager;
+        this.upgradeState = upgradeState;
+        this.upgradeUiManager = upgradeUiManager;
+    }
 
     public void startNewRun()
     {
         fightCount = 0;
-        DeckState.initDeck();
-        PlayerState.initialize();
-        UpgradeState.initUpgrades();
+        deckState.initDeck();
+        playerState.initialize();
+        upgradeState.initUpgrades();
 
         startFight();
     }
 
     public void startFight()
     {
-        PlayerState.currEnergy = PlayerState.maxEnergy;
-        PlayerState.currBlock = 0;
         fightCount++;
+        turnCount = 0;
+        playerState.startFight();
+        deckState.startFight();
+
         currEnemy = fightCount < 2 ? EnemyTypes.getBasicEnemy() : EnemyTypes.getBoss();
         Vector3 enemyScale = fightCount < 2 ? new Vector3(50, 50, 1) : new Vector3(75, 75, 1);
 
-        UiManager.startScene.SetActive(false);
-        UiManager.gameOverScene.SetActive(false);
-        UiManager.victoryScene.SetActive(false);
-        UiManager.cardListScene.SetActive(false);
-        UiManager.fightScene.SetActive(true);
-
-        DeckState.drawNewHand();
-
-        UiManager.updatePlayerUiFields();
-
-        turnCount = 0;
         currEnemyTurn = currEnemy.getEnemyTurn(turnCount);
-        UiManager.updateEnemyFields(currEnemy);
-        UiManager.updateEnemyIntent(currEnemyTurn);
-        SpriteManager.showEnemy(currEnemy);
-        SpriteManager.scaleEnemy(enemyScale);
+        enemyUiManager.showEnemy(currEnemy);
+        enemyUiManager.scaleEnemy(enemyScale);
 
-        UpgradeState.triggerCombatStartActions();
+        upgradeState.triggerCombatStartActions();
+
+        fightSceneUiManager.updateSceneUi(deckState);
+        sceneUiManager.startFight();
+        cardUiManager.showHand(deckState.hand);
+        playerUiManager.updatePlayerUiFields();
+        enemyUiManager.updateEnemyFields(currEnemy);
+        enemyUiManager.updateEnemyIntent(currEnemyTurn);
     }
 
     public void endTurn()
     {
-        DeckState.discardHand(true);
         turnCount++;
+        deckState.endTurn();
+
+        cardUiManager.destroyPlayerHandUi();
+        playerState.currEnergy = playerState.maxEnergy;
+
         enemyTurn(currEnemyTurn);
 
-        PlayerState.currEnergy = PlayerState.maxEnergy;
-
-        UiManager.updatePlayerUiFields();
-        UiManager.updateEnemyFields(currEnemy);
-        currEnemyTurn = currEnemy.getEnemyTurn(turnCount);
-        UiManager.updateEnemyIntent(currEnemyTurn);
+        cardUiManager.showHand(deckState.hand);
+        playerUiManager.updatePlayerUiFields();
+        enemyUiManager.updateEnemyFields(currEnemy);
+        enemyUiManager.updateEnemyIntent(currEnemyTurn);
     }
 
     private void enemyTurn(EnemyTurn enemyTurn)
     {
         for (int i = 0; i < enemyTurn.attackMultiplier; i++)
         {
-            PlayerState.takeHit(enemyTurn.attackIntent);
+            playerState.takeHit(enemyTurn.attackIntent);
         }
         currEnemy.currBlock = enemyTurn.blockIntent;
 
-        if (PlayerState.currHealth <= 0)
+        if (playerState.currHealth <= 0)
         {
             onPlayerDefeat();
         }
+        currEnemyTurn = currEnemy.getEnemyTurn(turnCount);
     }
 
-    public static void onCardPlayed(Card card)
+    public void onCardPlayed(Card card)
     {
-        DeckState.playCard(card);
-        currEnemy.takeHit(card.attack);
-        PlayerState.currEnergy -= card.energyCost;
-        PlayerState.currBlock += card.defend;
-        for (int i = 0; i < card.cardsToDraw; i++)
-        {
-            Card drawnCard = DeckState.randomCardFromDeck();
-            if (drawnCard != null)
-            {
-                DeckState.hand.Add(drawnCard);
-                UiManager.showCardInHand(drawnCard);
-            }
-        }
+        deckState.playCard(card);
+        playerState.onCardPlayed(card);
 
-
+        damageEnemy(card.attack);
         if (currEnemy.currHealth <= 0)
         {
             onEnemyDefeat();
         }
-        UiManager.updatePlayerUiFields();
-        UiManager.updateEnemyFields(currEnemy);
+
+        fightSceneUiManager.updateSceneUi(deckState);
+        playerUiManager.updatePlayerUiFields();
+        enemyUiManager.updateEnemyFields(currEnemy);
     }
 
-    private static void onEnemyDefeat()
+    private void onEnemyDefeat()
     {
-        DeckState.discardHand(false);
-        DeckState.shuffleDiscardIntoDeck();
+        deckState.discardHand();
+        deckState.shuffleDiscardIntoDeck();
 
-        UiManager.victoryScene.SetActive(true);
-        UiManager.showCardSelectUi(DeckState.generateCards(3));
-        UiManager.showUpgradeSelectUi(UpgradeState.genRandomUpgrades(2));
-        SpriteManager.hideEnemy();
+        cardUiManager.destroyPlayerHandUi();
+        sceneUiManager.showVictoryScene();
+        cardUiManager.showCardSelectUi(deckState.generateCards(3));
+        upgradeUiManager.showUpgradeSelectUi(upgradeState.genRandomUpgrades(2));
+        enemyUiManager.hideEnemy();
     }
 
-    public static void damageEnemy(int damage)
+    public void damageEnemy(int damage)
     {
         currEnemy.takeHit(damage);
-        UiManager.updateEnemyFields(currEnemy);
+        enemyUiManager.updateEnemyFields(currEnemy);
     }
 
-    public static void addPlayerBlock(int block)
+    public void addPlayerBlock(int block)
     {
-        PlayerState.currBlock += block;
-        UiManager.updatePlayerUiFields();
+        playerState.currBlock += block;
+        playerUiManager.updatePlayerUiFields();
     }
 
     private void onPlayerDefeat()
     {
-        UiManager.fightScene.SetActive(false);
-        UiManager.gameOverScene.SetActive(true);
-        //quick hack to show children of active/deactive scenes
-        foreach (Transform child in UiManager.gameOverScene.transform)
-        {
-            child.gameObject.SetActive(true);
-        }
+        sceneUiManager.showGameOver();
     }
 
-    public void hideCardPile()
+    public void addCardToDeck(Card card)
     {
-        UiManager.cardListScene.SetActive(false);
-        foreach (Transform child in UiManager.cardListGrid.transform)
-        {
-            Destroy(child.gameObject);
-        }
+        deckState.addCardToDeck(card);
     }
 
-    public void showDeck()
+    public void cardDrawn(Card card)
     {
-        UiManager.showCardPile(DeckState.deckCards);
+        cardUiManager.showCardInHand(card);
     }
 
-    public void showDiscard()
+    public bool isCardPlayable(Card card)
     {
-        UiManager.showCardPile(DeckState.discardCards);
+        return card.energyCost > playerState.currEnergy;
     }
 }

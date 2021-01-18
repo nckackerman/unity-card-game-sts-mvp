@@ -1,16 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public static class PlayerState
+﻿public class PlayerState
 {
-    public static int currHealth;
-    public static int maxHealth;
-    public static int currBlock;
-    public static int currEnergy;
-    public static int maxEnergy;
+    public int currHealth;
+    public int maxHealth;
+    public int currBlock;
+    public int currEnergy;
+    public int maxEnergy;
 
-    public static void initialize()
+    public void initialize()
     {
         maxHealth = 50;
         currHealth = maxHealth;
@@ -21,7 +17,13 @@ public static class PlayerState
         currBlock = 0;
     }
 
-    public static void takeHit(int damage)
+    public void startFight()
+    {
+        currEnergy = maxEnergy;
+        currBlock = 0;
+    }
+
+    public void takeHit(int damage)
     {
         if (currBlock >= damage)
         {
@@ -30,6 +32,13 @@ public static class PlayerState
         else
         {
             currHealth -= damage - currBlock;
+            currBlock = 0;
         }
+    }
+
+    public void onCardPlayed(Card card)
+    {
+        currEnergy -= card.energyCost;
+        currBlock += card.defend;
     }
 }
