@@ -12,6 +12,7 @@ public class FightManagerService
     private SceneUiManager sceneUiManager;
     private UpgradeState upgradeState;
     private DeckState deckState;
+    private AudioState audioState;
 
     private int fightCount = 0;
     private Enemy currEnemy = null;
@@ -42,7 +43,8 @@ public class FightManagerService
         PlayerUiManager playerUiManager,
         UpgradeUiManager upgradeUiManager,
         DeckState deckState,
-        UpgradeState upgradeState)
+        UpgradeState upgradeState,
+        AudioState audioState)
     {
         this.cardUiManager = cardUiManager;
         this.playerState = playerState;
@@ -53,6 +55,7 @@ public class FightManagerService
         this.sceneUiManager = sceneUiManager;
         this.upgradeState = upgradeState;
         this.upgradeUiManager = upgradeUiManager;
+        this.audioState = audioState;
     }
 
     public void startNewRun()
@@ -124,6 +127,7 @@ public class FightManagerService
     {
         deckState.playCard(card);
         playerState.onCardPlayed(card);
+        audioState.onCardPlayed();
 
         damageEnemy(card.attack);
         if (currEnemy.currHealth <= 0)

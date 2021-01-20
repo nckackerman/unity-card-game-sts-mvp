@@ -105,7 +105,8 @@ public class MainSceneInjectionService : MonoBehaviour
             playerUiManager,
             upgradeUiManager,
             deckState,
-            upgradeState
+            upgradeState,
+            new AudioState()
         );
         FightManagerService.setInstance(fightManagerService);
 

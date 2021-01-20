@@ -9,6 +9,15 @@ Absolutly! Please reach out to nckackerman@gmail.com for any question about this
 
 ## Updates
 
+### 1/19/2021
+
+Did a lot of code refactoring. Mostly moving away from every object being static and callable at anypoint. While the more sensible now, the I'm sure a better organization/strucutre is somewhere out there.
+
+Added a quick sound affect for when a card is played. Thanks to Dustyroom for providing the asstes on Unities Free section [here](https://assetstore.unity.com/packages/audio/sound-fx/free-casual-game-sfx-pack-54116)
+
+Whats next?
+- Take the MVP/POC bits and turn it into something fun to interact with. More intesting card + enemies for example.
+
 ### 1/17/2021
 
 Added POC/MVP for upgrades/relics. Functionality includes:
@@ -26,7 +35,7 @@ Whats next?
 Added POC/MVP sprites+animations to game. Thanks to PixelFrog for providing the asstes on Unities Free section [here](https://assetstore.unity.com/packages/2d/characters/pixel-adventure-1-155360)
 
 Whats Next?
-- Incorporating some time of "relics" into gameplay. Example: the second attack played each turn hits twice.
+- Incorporating some type of "relics" into gameplay. Example: the second attack played each turn hits twice.
 - Add some POC/MVP sound bites. Example: some sort of "hit" sound when a card is played.
 
 ### 1/11/2021 
