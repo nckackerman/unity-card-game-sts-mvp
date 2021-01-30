@@ -7,6 +7,7 @@ public class DeckState
     public List<Card> deckCards = new List<Card>();
     public List<Card> discardCards = new List<Card>();
     public List<Card> hand = new List<Card>();
+    public List<Card> cardsToRemoveAfterFight = new List<Card>();
 
     public void initDeck()
     {
@@ -57,12 +58,18 @@ public class DeckState
     {
         for (int i = 0; i < 5; i++)
         {
-            Card drawnCard = randomCardFromDeck();
-            if (drawnCard != null)
-            {
-                hand.Add(drawnCard);
-            }
+            drawCard();
         }
+    }
+
+    public Card drawCard()
+    {
+        Card drawnCard = randomCardFromDeck();
+        if (drawnCard != null)
+        {
+            hand.Add(drawnCard);
+        }
+        return drawnCard;
     }
 
     public void shuffleDiscardIntoDeck()
@@ -95,20 +102,16 @@ public class DeckState
 
     public void discardHand()
     {
-        for (int i = 0; i < hand.Count; i++)
+        List<Card> handCopy = new List<Card>(hand);
+        foreach (Card card in handCopy)
         {
-            Card card = hand[i];
-            discardCards.Add(card);
+            discardCard(card);
         }
-
-        hand = new List<Card>();
     }
 
     public void playCard(Card card)
     {
         FightManagerService fightManagerService = FightManagerService.getInstance();
-        discardCards.Add(card);
-        hand.Remove(card);
 
         for (int i = 0; i < card.cardsToDraw; i++)
         {
@@ -119,6 +122,14 @@ public class DeckState
                 fightManagerService.cardDrawn(drawnCard);
             }
         }
+        discardCard(card);
+    }
+
+    private void discardCard(Card card)
+    {
+        hand.Remove(card);
+        discardCards.Add(card);
+        card.onDiscard();
     }
 
     public List<Card> generateCards(int numCardsToGenerate)
@@ -133,5 +144,17 @@ public class DeckState
     public void addCardToDeck(Card card)
     {
         deckCards.Add(card);
+        if (card.isEnemycard)
+        {
+            cardsToRemoveAfterFight.Add(card);
+        }
+    }
+
+    public void onFightEnd()
+    {
+        foreach (Card cardToRemove in cardsToRemoveAfterFight)
+        {
+            deckCards.Remove(cardToRemove);
+        }
     }
 }

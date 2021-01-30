@@ -4,6 +4,12 @@ public class UpgradeTypes
 {
     public static string spritePath = "sprites/upgrades/";
 
+    public Upgrade getPineapple()
+    {
+        Upgrade pineApple = new Upgrade();
+        return pineApple;
+    }
+
     public Upgrade getApple(PlayerState playerState)
     {
         Upgrade apple = new Upgrade();
@@ -77,12 +83,6 @@ public class UpgradeTypes
     {
         Upgrade orange = new Upgrade();
         return orange;
-    }
-
-    public Upgrade getPineapple()
-    {
-        Upgrade pineApple = new Upgrade();
-        return pineApple;
     }
 
     public Upgrade getStrawberry()

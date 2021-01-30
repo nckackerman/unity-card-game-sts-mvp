@@ -65,7 +65,7 @@ public class CardGameObject : MonoBehaviour
             startPosition = transform.position;
             if (fightManagerService.isCardPlayable(card))
             {
-                gameObject.GetComponent<Image>().color = ColorUtils.cardDefault;
+                gameObject.GetComponent<Image>().color = ColorUtils.cardUnplayable;
                 return;
             }
             isDragging = true;

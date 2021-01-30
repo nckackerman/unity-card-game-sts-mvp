@@ -1,15 +1,19 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class Enemy
 {
     public int currHealth;
     public int maxHealth;
     public int currBlock;
-    public List<EnemyTurn> enemyTurns = new List<EnemyTurn>();
+    public List<Card> baseEnemyTurns = new List<Card>();
     public bool randomAttackOrder = false;
     public Sprite sprite;
     public RuntimeAnimatorController animatorController;
+    public Card currEnemyTurn;
+    public Action onShuffleAction;
+    List<Card> enemyModifiers = new List<Card>();
 
     public void initialize()
     {
@@ -30,13 +34,43 @@ public class Enemy
         }
     }
 
-    public EnemyTurn getEnemyTurn(int turnCount)
+    public Card getEnemyTurn(int turnCount)
     {
         if (randomAttackOrder)
         {
-            int index = Random.Range(0, enemyTurns.Count);
-            return enemyTurns[index];
+            int index = UnityEngine.Random.Range(0, baseEnemyTurns.Count);
+            currEnemyTurn = baseEnemyTurns[index];
         }
-        return enemyTurns[turnCount % enemyTurns.Count];
+        else
+        {
+            currEnemyTurn = baseEnemyTurns[turnCount % baseEnemyTurns.Count];
+        }
+        enemyModifiers = new List<Card>();
+        enemyModifiers.Add(currEnemyTurn);
+        return currEnemyTurn;
+    }
+
+    public Card getModifiedEnemyTurn(int turnCount)
+    {
+        Card modifiedEnemyTurn = new Card();
+        foreach (Card card in enemyModifiers)
+        {
+            modifiedEnemyTurn.stackCardAffects(card);
+        }
+
+        return modifiedEnemyTurn;
+    }
+
+    public void onShuffle()
+    {
+        if (onShuffleAction != null)
+        {
+            onShuffleAction();
+        }
+    }
+
+    public void onEnemyCardDrawn(Card card)
+    {
+        enemyModifiers.Add(card);
     }
 }

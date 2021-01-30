@@ -23,6 +23,8 @@ public class UpgradeState
         upgradePool.Add(upgradeTypes.getBanana(playerState));
         upgradePool.Add(upgradeTypes.getCherry());
         upgradePool.Add(upgradeTypes.getKiwi());
+
+        heldUpgrades.Add(upgradeTypes.getPineapple());
     }
 
     public List<Upgrade> genRandomUpgrades(int numUpgrades)

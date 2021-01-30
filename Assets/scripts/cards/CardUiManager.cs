@@ -26,17 +26,21 @@ public class CardUiManager
     public void showHand(List<Card> playerHand)
     {
         destroyPlayerHandUi();
+        FightManagerService fightManagerService = FightManagerService.getInstance();
         for (int i = 0; i < playerHand.Count; i++)
         {
             Card currCard = playerHand[i];
-            showCardInHand(currCard);
+            fightManagerService.cardDrawn(currCard);
         }
     }
 
     public void showCardInHand(Card card)
     {
         CardGameObject cardInstance = getCardObject(card);
-        cardInstance.createCardInHandObject();
+        if (!card.isEnemycard)
+        {
+            cardInstance.createCardInHandObject();
+        }
         cardInstance.transform.SetParent(playerHand.transform);
     }
 
@@ -54,7 +58,6 @@ public class CardUiManager
         foreach (Card card in cards)
         {
             CardGameObject cardInHandInstance = getCardObject(card);
-            cardInHandInstance.createCardInHandObject();
             cardInHandInstance.transform.SetParent(cardListGrid.transform);
         }
     }
@@ -78,6 +81,11 @@ public class CardUiManager
         cardText.text = card.getCardText();
         CardGameObject cardGameObject = cardInstance.GetComponent<CardGameObject>();
         cardGameObject.card = card;
+
+        if (card.isEnemycard)
+        {
+            cardInstance.GetComponent<Image>().color = ColorUtils.cardUnplayable;
+        }
         return cardGameObject;
     }
 

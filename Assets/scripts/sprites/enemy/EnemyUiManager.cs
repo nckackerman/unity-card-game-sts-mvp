@@ -38,10 +38,10 @@ public class EnemyUiManager
         enemyBlock.text = "Block: " + currEnemy.currBlock.ToString();
     }
 
-    public void updateEnemyIntent(EnemyTurn enemyTurn)
+    public void updateEnemyIntent(Card enemyTurn)
     {
-        enemyBlockIntent.text = "Block: " + enemyTurn.blockIntent.ToString();
-        enemyAttackIntent.text = "Attack: " + enemyTurn.attackIntent.ToString();
+        enemyBlockIntent.text = "Block: " + enemyTurn.defend.ToString();
+        enemyAttackIntent.text = "Attack: " + enemyTurn.attack.ToString();
         if (enemyTurn.attackMultiplier > 1)
         {
             enemyAttackIntent.text += " x " + enemyTurn.attackMultiplier.ToString();

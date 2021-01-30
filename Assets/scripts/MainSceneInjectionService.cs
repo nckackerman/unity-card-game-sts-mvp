@@ -17,6 +17,7 @@ public class MainSceneInjectionService : MonoBehaviour
     private Text enemyHealthText;
     private Text playerBlockText;
     private Text playerEnergyText;
+    private Text playerExtraDrawText;
     private Text discardText;
 
     private Text enemyHealth;
@@ -32,6 +33,7 @@ public class MainSceneInjectionService : MonoBehaviour
     private GameObject endTurnObject;
     private Button closeCardListButton;
     private GameObject showDeckObject;
+    private GameObject drawObject;
 
     private GameObject cardListScene;
     private GameObject cardSelectUi;
@@ -82,7 +84,8 @@ public class MainSceneInjectionService : MonoBehaviour
             playerState,
             playerHealthText,
             playerBlockText,
-            playerEnergyText
+            playerEnergyText,
+            playerExtraDrawText
         );
         UpgradeTypes upgradeTypes = new UpgradeTypes();
         UpgradeState upgradeState = new UpgradeState(
@@ -106,7 +109,8 @@ public class MainSceneInjectionService : MonoBehaviour
             upgradeUiManager,
             deckState,
             upgradeState,
-            new AudioState()
+            new AudioState(),
+            new EnemyManagerService(enemyUiManager)
         );
         FightManagerService.setInstance(fightManagerService);
 
@@ -120,6 +124,7 @@ public class MainSceneInjectionService : MonoBehaviour
         addEventTrigger(showDeckObject).callback.AddListener((data) => cardUiManager.showCardPile(deckState.deckCards));
         addEventTrigger(showDiscardObject).callback.AddListener((data) => cardUiManager.showCardPile(deckState.discardCards));
         addEventTrigger(endTurnObject).callback.AddListener((data) => fightManagerService.endTurn());
+        addEventTrigger(drawObject).callback.AddListener((data) => fightManagerService.extraDraw());
     }
 
     private void takeObjectsFromScene()
@@ -130,6 +135,7 @@ public class MainSceneInjectionService : MonoBehaviour
         //gameBoard
         discardText = GameObject.Find("discardText").GetComponent<Text>();
         playerEnergyText = GameObject.Find("playerEnergy").GetComponent<Text>();
+        playerExtraDrawText = GameObject.Find("drawText").GetComponent<Text>();
         playerHandObject = GameObject.Find("playerHand");
         upgradeList = GameObject.Find("UpgradeList");
         startNewRunButton = GameObject.Find("StartNewRunButton").GetComponent<Button>();
@@ -139,6 +145,7 @@ public class MainSceneInjectionService : MonoBehaviour
         showDeckObject = GameObject.Find("ShowDeckObject");
         endTurnObject = GameObject.Find("EndTurnObject");
         showDiscardObject = GameObject.Find("DiscardObject");
+        drawObject = GameObject.Find("DrawObject");
 
         //sprites
         playerHealthText = GameObject.Find("playerHealth").GetComponent<Text>();

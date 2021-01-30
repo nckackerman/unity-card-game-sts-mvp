@@ -5,6 +5,10 @@
     public int currBlock;
     public int currEnergy;
     public int maxEnergy;
+    public int extraDrawMax;
+    public int currExtraDraw;
+    public int extraDrawCostHealth;
+    public int vulnerableCount;
 
     public void initialize()
     {
@@ -13,6 +17,12 @@
 
         maxEnergy = 3;
         currEnergy = maxEnergy;
+
+        extraDrawMax = 5;
+        currExtraDraw = 0;
+
+        extraDrawCostHealth = 3;
+        vulnerableCount = 0;
 
         currBlock = 0;
     }
@@ -40,5 +50,23 @@
     {
         currEnergy -= card.energyCost;
         currBlock += card.defend;
+    }
+
+    public bool canExtraDraw()
+    {
+        return currHealth > extraDrawCostHealth && currExtraDraw < extraDrawMax;
+    }
+
+    public void onExtraDraw()
+    {
+        currHealth -= extraDrawCostHealth;
+        currExtraDraw++;
+    }
+
+    public void endTurn()
+    {
+        currEnergy = maxEnergy;
+        currExtraDraw = 0;
+        currBlock = 0;
     }
 }
