@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class CardUiManager
 {
@@ -34,14 +35,36 @@ public class CardUiManager
         }
     }
 
-    public void showCardInHand(Card card)
+    public void showCardInHand(Card card, int handSize)
     {
         CardGameObject cardInstance = getCardObject(card);
         if (!card.isEnemycard)
         {
             cardInstance.createCardInHandObject();
         }
-        cardInstance.transform.SetParent(playerHand.transform);
+        cardInstance.transform.SetParent(playerHand.transform, false);
+        updatePlayerHandSpacing(handSize);
+    }
+
+    private void updatePlayerHandSpacing(int handSize)
+    {
+        GridLayoutGroup gridLayout = playerHand.GetComponent<GridLayoutGroup>();
+        if (handSize == 10)
+        {
+            gridLayout.spacing = new Vector2(-75, 0);
+        }
+        else if (handSize > 7)
+        {
+            gridLayout.spacing = new Vector2(-65, 0);
+        }
+        else if (handSize > 5)
+        {
+            gridLayout.spacing = new Vector2(-55, 0);
+        }
+        else
+        {
+            gridLayout.spacing = new Vector2(-40, 0);
+        }
     }
 
     public void destroyPlayerHandUi()
@@ -58,7 +81,7 @@ public class CardUiManager
         foreach (Card card in cards)
         {
             CardGameObject cardInHandInstance = getCardObject(card);
-            cardInHandInstance.transform.SetParent(cardListGrid.transform);
+            cardInHandInstance.transform.SetParent(cardListGrid.transform, false);
         }
     }
 
@@ -70,21 +93,26 @@ public class CardUiManager
         {
             CardGameObject selectableCard = getCardObject(card);
             selectableCard.createSelectableCard(this);
-            selectableCard.transform.SetParent(cardSelect.transform);
+            selectableCard.transform.SetParent(cardSelect.transform, false);
         }
     }
 
     private CardGameObject getCardObject(Card card)
     {
         GameObject cardInstance = GameObject.Instantiate(cardPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-        Text cardText = cardInstance.GetComponentInChildren<Text>();
-        cardText.text = card.getCardText();
+        TextMeshProUGUI cardEnergyText = cardInstance.transform.Find("cardEnergyUi").gameObject.GetComponentInChildren<TextMeshProUGUI>();
+        cardEnergyText.text = card.energyCost.ToString();
+        TextMeshProUGUI cardDescription = cardInstance.transform.Find("cardDescriptionUi").gameObject.GetComponentInChildren<TextMeshProUGUI>();
+        cardDescription.text = card.getCardText();
+        TextMeshProUGUI cardName = cardInstance.transform.Find("cardNameUi").gameObject.GetComponentInChildren<TextMeshProUGUI>();
+        cardName.text = card.energyCost.ToString();
         CardGameObject cardGameObject = cardInstance.GetComponent<CardGameObject>();
         cardGameObject.card = card;
 
         if (card.isEnemycard)
         {
-            cardInstance.GetComponent<Image>().color = ColorUtils.cardUnplayable;
+            GameObject backgroundImage = cardInstance.transform.Find("cardBackground").gameObject;
+            backgroundImage.GetComponent<Image>().color = ColorUtils.cardUnplayable;
         }
         return cardGameObject;
     }

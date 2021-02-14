@@ -1,32 +1,31 @@
-using UnityEngine.UI;
+using UnityEngine;
+using TMPro;
 
 public class PlayerUiManager
 {
 
     private PlayerState playerState;
-    private Text playerHealthText;
-    private Text playerBlockText;
-    private Text playerEnergyText;
-    private Text playerDrawText;
+    private TextMeshProUGUI playerHealthText;
+    private TextMeshProUGUI playerBlockText;
+    private TextMeshProUGUI playerEnergyText;
+    private TextMeshProUGUI playerDrawText;
+    private HealthBar healthBar;
 
     public PlayerUiManager(
         PlayerState playerState,
-        Text playerHealthText,
-        Text playerBlockText,
-        Text playerEnergyText,
-        Text playerDrawText)
+        TextMeshProUGUI playerEnergyText,
+        TextMeshProUGUI playerDrawText,
+        HealthBar healthBar)
     {
         this.playerState = playerState;
-        this.playerHealthText = playerHealthText;
-        this.playerBlockText = playerBlockText;
         this.playerEnergyText = playerEnergyText;
         this.playerDrawText = playerDrawText;
+        this.healthBar = healthBar;
     }
     public void updatePlayerUiFields()
     {
-        playerHealthText.text = playerState.currHealth.ToString() + "/" + playerState.maxHealth.ToString();
-        playerBlockText.text = "Block: " + playerState.currBlock.ToString();
-        playerEnergyText.text = "Energy: " + playerState.currEnergy.ToString();
+        playerEnergyText.text = playerState.currEnergy.ToString();
         playerDrawText.text = "Extra draw:\n" + playerState.currExtraDraw + "/" + playerState.extraDrawMax;
+        healthBar.updateHealth(playerState.maxHealth, playerState.currHealth, playerState.currBlock);
     }
 }

@@ -4,7 +4,6 @@ public class FightManagerService
 {
     private PlayerState playerState;
     private CardUiManager cardUiManager;
-    private EnemyUiManager enemyUiManager;
     private PlayerUiManager playerUiManager;
     private UpgradeUiManager upgradeUiManager;
     private FightSceneUiManager fightSceneUiManager;
@@ -15,7 +14,6 @@ public class FightManagerService
     private EnemyManagerService enemyManagerService;
 
     private int fightCount = 0;
-    private Enemy currEnemy = null;
     private int turnCount = 0;
     private static FightManagerService fightManagerServiceInstance;
 
@@ -35,7 +33,6 @@ public class FightManagerService
 
     public FightManagerService(
         CardUiManager cardUiManager,
-        EnemyUiManager enemyUiManager,
         SceneUiManager sceneUiManager,
         FightSceneUiManager fightSceneUiManager,
         PlayerState playerState,
@@ -48,7 +45,6 @@ public class FightManagerService
     {
         this.cardUiManager = cardUiManager;
         this.playerState = playerState;
-        this.enemyUiManager = enemyUiManager;
         this.playerUiManager = playerUiManager;
         this.fightSceneUiManager = fightSceneUiManager;
         this.deckState = deckState;
@@ -76,15 +72,13 @@ public class FightManagerService
         playerState.startFight();
         deckState.startFight();
 
-        currEnemy = enemyManagerService.getEnemyForFight(fightCount);
-        currEnemy.getEnemyTurn(turnCount);
-
-        enemyUiManager.showEnemy(currEnemy);
+        enemyManagerService.initializeEnemiesForFight(fightCount);
 
         upgradeState.triggerCombatStartActions();
 
         sceneUiManager.startFight();
         cardUiManager.showHand(deckState.hand);
+        enemyManagerService.updateEnemyUi();
         updateFightUi();
     }
 
@@ -93,7 +87,7 @@ public class FightManagerService
         turnCount++;
         cardUiManager.destroyPlayerHandUi();
 
-        enemyTurn();
+        enemyManagerService.enemyTurn(turnCount);
         deckState.endTurn();
         playerState.endTurn();
 
@@ -101,45 +95,32 @@ public class FightManagerService
         updateFightUi();
     }
 
-    private void enemyTurn()
+    public void onCardPlayed(Card card)
     {
-        Card enemyTurn = currEnemy.getModifiedEnemyTurn(turnCount);
+        //Must call playerState.onCardPlayed before deckState.playCard
+        playerState.onCardPlayed(card);
+        deckState.playCard(card);
+        audioState.onCardPlayed();
 
-        for (int i = 0; i < enemyTurn.attackMultiplier; i++)
-        {
-            playerState.takeHit(enemyTurn.attack);
-        }
-        currEnemy.currBlock = enemyTurn.defend;
+        updateFightUi();
+    }
 
+    public void onEnemyCardPlayed(Card enemyTurn)
+    {
+        playerState.takeHit(enemyTurn.attack);
         if (playerState.currHealth <= 0)
         {
             onPlayerDefeat();
         }
-        if (enemyTurn.cardToAddToPlayersDecks != null)
-        {
-            foreach (Card cardToAdd in enemyTurn.cardToAddToPlayersDecks)
-            {
-                deckState.addCardToDeck(cardToAdd);
-            }
-        }
-        currEnemy.getEnemyTurn(turnCount);
     }
 
-    public void onCardPlayed(Card card)
+    public void onCardPlayed(Card card, EnemyGameObject enemyGameObject)
     {
-        deckState.playCard(card);
-        playerState.onCardPlayed(card);
-        audioState.onCardPlayed();
-
-        damageEnemy(card.attack);
-        if (currEnemy.currHealth <= 0)
-        {
-            onEnemyDefeat();
-        }
-        updateFightUi();
+        onCardPlayed(card);
+        enemyGameObject.onCardPlayed(card);
     }
 
-    private void onEnemyDefeat()
+    public void onEnemyDefeat()
     {
         deckState.discardHand();
         deckState.shuffleDiscardIntoDeck();
@@ -149,13 +130,7 @@ public class FightManagerService
         sceneUiManager.showVictoryScene();
         cardUiManager.showCardSelectUi(deckState.generateCards(3));
         upgradeUiManager.showUpgradeSelectUi(upgradeState.genRandomUpgrades(2));
-        enemyUiManager.hideEnemy();
-    }
-
-    public void damageEnemy(int damage)
-    {
-        currEnemy.takeHit(damage);
-        updateFightUi();
+        enemyManagerService.hideEnemy();
     }
 
     public void addPlayerBlock(int block)
@@ -164,7 +139,7 @@ public class FightManagerService
         updateFightUi();
     }
 
-    private void onPlayerDefeat()
+    public void onPlayerDefeat()
     {
         sceneUiManager.showGameOver();
     }
@@ -177,10 +152,10 @@ public class FightManagerService
 
     public void cardDrawn(Card card)
     {
-        cardUiManager.showCardInHand(card);
+        cardUiManager.showCardInHand(card, deckState.hand.Count);
         if (card.isEnemycard)
         {
-            currEnemy.onEnemyCardDrawn(card);
+            enemyManagerService.onEnemyCardDrawn(card);
         }
         updateFightUi();
     }
@@ -214,7 +189,5 @@ public class FightManagerService
     {
         playerUiManager.updatePlayerUiFields();
         fightSceneUiManager.updateSceneUi(deckState);
-        enemyUiManager.updateEnemyFields(currEnemy);
-        enemyUiManager.updateEnemyIntent(currEnemy.getModifiedEnemyTurn(turnCount));
     }
 }

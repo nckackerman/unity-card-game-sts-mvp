@@ -3,10 +3,20 @@ public static class EnemyTypes
 {
 
     public static string spritePath = "sprites/characters/MaskDude/";
-    public static Enemy getFirstEnemy()
+    public static GameObject enemyObjectPrefab;
+
+    public static void initalize(GameObject prefab)
     {
-        Enemy basicEnemy = new Enemy();
-        basicEnemy.maxHealth = 40;
+        enemyObjectPrefab = prefab;
+    }
+
+    public static EnemyGameObject getFirstEnemy()
+    {
+        GameObject enemyInstance = GameObject.Instantiate(enemyObjectPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+        EnemyGameObject enemyGameObject = enemyInstance.GetComponent<EnemyGameObject>();
+
+        EnemyState basicEnemy = new EnemyState();
+        basicEnemy.maxHealth = 35;
         basicEnemy.baseEnemyTurns.Add(new Card(11, 0));
         basicEnemy.baseEnemyTurns.Add(new Card(0, 10));
         basicEnemy.baseEnemyTurns.Add(new Card(5, 7));
@@ -15,14 +25,17 @@ public static class EnemyTypes
             //TODO: add vulnerable card on shuffle
         };
 
-        basicEnemy.animatorController = Resources.Load<RuntimeAnimatorController>(spritePath + "MaskManController");
-        basicEnemy.initialize();
-        return basicEnemy;
+        //basicEnemy.animatorController = Resources.Load<RuntimeAnimatorController>(spritePath + "MaskManController");
+        enemyGameObject.initalize(enemyInstance, basicEnemy);
+        return enemyGameObject;
     }
 
-    public static Enemy getSecondEnemy()
+    public static EnemyGameObject getSecondEnemy()
     {
-        Enemy basicEnemy = new Enemy();
+        GameObject enemyInstance = GameObject.Instantiate(enemyObjectPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+        EnemyGameObject enemyGameObject = enemyInstance.GetComponent<EnemyGameObject>();
+
+        EnemyState basicEnemy = new EnemyState();
         basicEnemy.maxHealth = 44;
 
         Card enemyAttackCard = new Card();
@@ -37,22 +50,25 @@ public static class EnemyTypes
         basicEnemy.baseEnemyTurns.Add(addCardToDeckTurn(enemyAttackCard));
         basicEnemy.baseEnemyTurns.Add(addCardToDeckTurn(enemyAttackMultiplierCard));
 
-        basicEnemy.animatorController = Resources.Load<RuntimeAnimatorController>(spritePath + "MaskManController");
+        //basicEnemy.animatorController = Resources.Load<RuntimeAnimatorController>(spritePath + "MaskManController");
 
-        basicEnemy.initialize();
-        return basicEnemy;
+        enemyGameObject.initalize(enemyInstance, basicEnemy);
+        return enemyGameObject;
     }
 
-    public static Enemy getThirdEnemy()
+    public static EnemyGameObject getThirdEnemy()
     {
         //TODO: add a card the inhibits player attacking
         //TODO: add a card that dmgs the enemy for each additional turn this fight
         return null;
     }
 
-    public static Enemy getBoss()
+    public static EnemyGameObject getBoss()
     {
-        Enemy bossEnemy = new Enemy();
+        GameObject enemyInstance = GameObject.Instantiate(enemyObjectPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+        EnemyGameObject enemyGameObject = enemyInstance.GetComponent<EnemyGameObject>();
+
+        EnemyState bossEnemy = new EnemyState();
         bossEnemy.maxHealth = 99;
         Card increaseStrengthCard = new Card();
         for (int i = 1; i < 4; i++)
@@ -65,10 +81,10 @@ public static class EnemyTypes
         increaseStrengthCard.isEnemycard = true;
 
         bossEnemy.baseEnemyTurns.Add(addCardToDeckTurn(increaseStrengthCard));
-        bossEnemy.animatorController = Resources.Load<RuntimeAnimatorController>(spritePath + "MaskManController");
+        // bossEnemy.animatorController = Resources.Load<RuntimeAnimatorController>(spritePath + "MaskManController");
 
-        bossEnemy.initialize();
-        return bossEnemy;
+        enemyGameObject.initalize(enemyInstance, bossEnemy);
+        return enemyGameObject;
     }
 
     private static Card addCardToDeckTurn(Card card)

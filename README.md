@@ -9,6 +9,13 @@ Absolutely! Please reach out to nckackerman@gmail.com for any question about thi
 
 ## Updates
 
+### 2/14/2021
+Added better placeholder assets
+
+Whats next?
+- I want to explore refactoring teh code. As is I've sort of rolled my own event system for updating, and I ahve to assume there is a Unity provided way that is better than my implmentation
+- start building interesting cards, enemies, amd upgrades to interact with
+
 ### 1/30/2021
 Revisiting the goal for this project, I wanted to play around with unity and release a deck building game end to end. Slay the Spire (StS) was taken as inspiration for a handful of reasons. I spent a lot of the last week thinking of novel game mechanics that I could incorporate to this deck builder. I wanted something "new" this game could explore in the genre. I learned a few things this week. 
 
@@ -21,8 +28,9 @@ After enough time and internalizing the mantra "Dont let perfect be the enemy of
 New game mechanics this release:
 player can draw up to 5 cards per turn, but at a cost
 Enemies can now add their own cards to the player's deck. When these cards are drawn, they'll be added to the enemies current attack. For example: Attack player for x damage OR repeat current attack twice
+
 Whats next?
-Play around with assets. Need to make the game more attractive to look at.
+- Play around with assets. Need to make the game more attractive to look at.
 
 ### 1/19/2021
 

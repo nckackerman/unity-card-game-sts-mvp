@@ -1,7 +1,8 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using System;
+using TMPro;
+
 
 /**
 * This class is responsible for taking all Unity GameObjects for a scene and passing
@@ -12,20 +13,14 @@ using System;
 public class MainSceneInjectionService : MonoBehaviour
 {
     private static string prefabPath = "prefabs/";
-    private Text deckText;
-    private Text playerHealthText;
-    private Text enemyHealthText;
-    private Text playerBlockText;
-    private Text playerEnergyText;
-    private Text playerExtraDrawText;
-    private Text discardText;
+    private TextMeshProUGUI deckText;
+    private TextMeshProUGUI playerEnergyText;
+    private TextMeshProUGUI playerExtraDrawText;
+    private TextMeshProUGUI discardText;
 
-    private Text enemyHealth;
-    private Text enemyBlockIntent;
-    private Text enemyAttackIntent;
-    private Text enemyBlock;
-    private GameObject enemyObject;
+    private GameObject enemyContainer;
     private GameObject playerHandObject;
+    private GameObject playerHealthBar;
     private Button startNewRunButton;
     private GameObject showDiscardObject;
     private Button nextFightButton;
@@ -50,9 +45,13 @@ public class MainSceneInjectionService : MonoBehaviour
         //prefabs
         GameObject upgradePrefab = Resources.Load(prefabPath + "upgradeObject") as GameObject;
         GameObject cardPrefab = Resources.Load(prefabPath + "cardObject") as GameObject;
+        GameObject healthBarPrefab = Resources.Load(prefabPath + "healthBarObject") as GameObject;
+        GameObject enemyPrefab = Resources.Load(prefabPath + "enemyObject") as GameObject;
 
         takeObjectsFromScene();
 
+        EnemyTypes.initalize(enemyPrefab);
+        PlayerState playerState = new PlayerState();
         DeckState deckState = new DeckState();
         CardUiManager cardUiManager = new CardUiManager(
             cardPrefab,
@@ -61,13 +60,11 @@ public class MainSceneInjectionService : MonoBehaviour
             cardListScene,
             cardSelectUi
         );
-        EnemyUiManager enemyUiManager = new EnemyUiManager(
-            enemyHealth,
-            enemyBlock,
-            enemyBlockIntent,
-            enemyAttackIntent,
-            enemyObject
+        EnemyManagerService enemyManagerService = new EnemyManagerService(
+            enemyPrefab,
+            enemyContainer
         );
+        EnemyManagerService.setInstance(enemyManagerService);
         SceneUiManager sceneUiManager = new SceneUiManager(
             startScene,
             gameOverScene,
@@ -79,13 +76,12 @@ public class MainSceneInjectionService : MonoBehaviour
             deckText,
             discardText
         );
-        PlayerState playerState = new PlayerState();
+
         PlayerUiManager playerUiManager = new PlayerUiManager(
             playerState,
-            playerHealthText,
-            playerBlockText,
             playerEnergyText,
-            playerExtraDrawText
+            playerExtraDrawText,
+            new HealthBar(playerHealthBar)
         );
         UpgradeTypes upgradeTypes = new UpgradeTypes();
         UpgradeState upgradeState = new UpgradeState(
@@ -101,7 +97,6 @@ public class MainSceneInjectionService : MonoBehaviour
 
         FightManagerService fightManagerService = new FightManagerService(
             cardUiManager,
-            enemyUiManager,
             sceneUiManager,
             fightSceneUiManager,
             playerState,
@@ -110,7 +105,7 @@ public class MainSceneInjectionService : MonoBehaviour
             deckState,
             upgradeState,
             new AudioState(),
-            new EnemyManagerService(enemyUiManager)
+            enemyManagerService
         );
         FightManagerService.setInstance(fightManagerService);
 
@@ -130,32 +125,26 @@ public class MainSceneInjectionService : MonoBehaviour
     private void takeObjectsFromScene()
     {
         //cards
-        deckText = GameObject.Find("deckText").GetComponent<Text>();
+        deckText = GameObject.Find("deckText").GetComponent<TextMeshProUGUI>();
 
         //gameBoard
-        discardText = GameObject.Find("discardText").GetComponent<Text>();
-        playerEnergyText = GameObject.Find("playerEnergy").GetComponent<Text>();
-        playerExtraDrawText = GameObject.Find("drawText").GetComponent<Text>();
+        discardText = GameObject.Find("discardText").GetComponent<TextMeshProUGUI>();
+        playerEnergyText = GameObject.Find("playerEnergy").GetComponent<TextMeshProUGUI>();
+        playerExtraDrawText = GameObject.Find("drawText").GetComponent<TextMeshProUGUI>();
+        playerHealthBar = GameObject.Find("playerHealthBarObject");
         playerHandObject = GameObject.Find("playerHand");
         upgradeList = GameObject.Find("UpgradeList");
         startNewRunButton = GameObject.Find("StartNewRunButton").GetComponent<Button>();
         nextFightButton = GameObject.Find("NextFightButton").GetComponent<Button>();
         runItBackButton = GameObject.Find("RunItBackButton").GetComponent<Button>();
         closeCardListButton = GameObject.Find("CloseCardListButton").GetComponent<Button>();
-        showDeckObject = GameObject.Find("ShowDeckObject");
+        showDeckObject = GameObject.Find("showDeckClickable");
         endTurnObject = GameObject.Find("EndTurnObject");
-        showDiscardObject = GameObject.Find("DiscardObject");
+        showDiscardObject = GameObject.Find("discardClickable");
         drawObject = GameObject.Find("DrawObject");
 
-        //sprites
-        playerHealthText = GameObject.Find("playerHealth").GetComponent<Text>();
-        playerBlockText = GameObject.Find("playerBlock").GetComponent<Text>();
-
-        enemyHealth = GameObject.Find("enemyHealth").GetComponent<Text>();
-        enemyBlockIntent = GameObject.Find("blockIntent").GetComponent<Text>();
-        enemyAttackIntent = GameObject.Find("attackIntent").GetComponent<Text>();
-        enemyBlock = GameObject.Find("enemyBlock").GetComponent<Text>();
-        enemyObject = GameObject.Find("EnemySprite");
+        //enemy
+        enemyContainer = GameObject.Find("enemyContainer");
 
         //views
         startScene = GameObject.Find("startScene");
@@ -176,7 +165,6 @@ public class MainSceneInjectionService : MonoBehaviour
     private EventTrigger.Entry addEventTrigger(GameObject gameObject)
     {
         EventTrigger trigger = gameObject.GetComponent<EventTrigger>();
-        //.onClick.AddListener(fightManagerService.showDeck)
         EventTrigger.Entry entry = new EventTrigger.Entry();
         entry.eventID = EventTriggerType.PointerDown;
         trigger.triggers.Add(entry);

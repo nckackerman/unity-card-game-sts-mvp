@@ -31,6 +31,7 @@
     {
         currEnergy = maxEnergy;
         currBlock = 0;
+        currExtraDraw = 0;
     }
 
     public void takeHit(int damage)

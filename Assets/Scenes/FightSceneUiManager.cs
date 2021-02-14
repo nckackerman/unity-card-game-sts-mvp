@@ -1,19 +1,20 @@
 using UnityEngine.UI;
+using TMPro;
 
 public class FightSceneUiManager
 {
 
-    private Text deckText;
-    private Text discardText;
+    private TextMeshProUGUI deckText;
+    private TextMeshProUGUI discardText;
 
-    public FightSceneUiManager(Text deckText, Text discardText)
+    public FightSceneUiManager(TextMeshProUGUI deckText, TextMeshProUGUI discardText)
     {
         this.deckText = deckText;
         this.discardText = discardText;
     }
     public void updateSceneUi(DeckState deckState)
     {
-        deckText.text = "Deck: " + deckState.deckCards.Count.ToString();
-        discardText.text = "Discard: " + deckState.discardCards.Count.ToString();
+        deckText.text = deckState.deckCards.Count.ToString();
+        discardText.text = deckState.discardCards.Count.ToString();
     }
 }

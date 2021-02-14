@@ -10,6 +10,7 @@ public class Card
     public int attackMultiplier = 1;
     public int vulnerableToApply = 0;
     public int strengthDelta = 0;
+    public bool needsTarget = false;
     public List<Card> cardToAddToPlayersDecks = new List<Card>();
 
     public List<CardMod> cardMods = new List<CardMod>();
@@ -31,10 +32,6 @@ public class Card
         if (isEnemycard)
         {
             text += "Enemy \n\n";
-        }
-        else
-        {
-            text += "Energy: " + energyCost + "\n\n";
         }
         if (attack > 0)
         {

@@ -55,7 +55,7 @@ public class UpgradeTypes
         cherry.description = "At the start of combat, deal " + firstTurnDamage + " damage to all enemies";
         cherry.onCombatStartAction = () =>
         {
-            FightManagerService.getInstance().damageEnemy(firstTurnDamage);
+            EnemyManagerService.getInstance().damageAllEnemy(firstTurnDamage);
         };
         return cherry;
     }

@@ -5,6 +5,7 @@
         Card basicAttack = new Card();
         basicAttack.attack = 5;
         basicAttack.energyCost = 1;
+        basicAttack.needsTarget = true;
         return basicAttack;
     }
 
@@ -21,6 +22,7 @@
         Card betterAttack = new Card();
         betterAttack.attack = 13;
         betterAttack.energyCost = 2;
+        betterAttack.needsTarget = true;
         return betterAttack;
     }
 
