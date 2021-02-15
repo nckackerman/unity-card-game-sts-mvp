@@ -8,20 +8,24 @@ This is a for-fun project to build a POC/MVP for a deckbuilder game in [Unity-2d
 Absolutely! Please reach out to nckackerman@gmail.com for any question about this code. Happy to help however I can :)
 
 ## Updates
+### 2/15/2021
+Worked on the most obvious bugs to improve quality of life while interacting with the game. This includes:
+- Card lists are now scrollable
+- Cards enlarge on hover
 
 ### 2/14/2021
 Added better placeholder assets
 
 Whats next?
-- I want to explore refactoring teh code. As is I've sort of rolled my own event system for updating, and I ahve to assume there is a Unity provided way that is better than my implmentation
+- I want to explore refactoring the code. As is, I've sort of rolled my own event system for updating the game state, and I have to assume there is a Unity provided way that is better than my implmentation
 - start building interesting cards, enemies, amd upgrades to interact with
 
 ### 1/30/2021
 Revisiting the goal for this project, I wanted to play around with unity and release a deck building game end to end. Slay the Spire (StS) was taken as inspiration for a handful of reasons. I spent a lot of the last week thinking of novel game mechanics that I could incorporate to this deck builder. I wanted something "new" this game could explore in the genre. I learned a few things this week. 
 
-1) A lot of ideas sound good until you start writing them down and realize they're much messier on paper than in your head.  
-2) The deck building genre has been around a while and most good ideas are already implemented
-3) StS is really well-designed. Every mechanic is fun and nothing feels like bloat to me.
+1. A lot of ideas sound good until you start writing them down and realize they're much messier on paper than in your head.  
+2. The deck building genre has been around a while and most good ideas are already implemented
+3. StS is really well-designed. Every mechanic is fun and nothing feels like bloat to me.
 
 After enough time and internalizing the mantra "Dont let perfect be the enemy of good" I've decided a single deck that shares both player card/action and enemy actions is a good enough novel approach for this game. The goal of this mechanic is to move away from the traditional deckbuilding best practice that a thin deck with card draw is almost always the strongest option. What this means for gameplay is players will need to think more critically about when drawing is the "right" move. Since drawing will mean the player may draw an enemy action which makes the enemy more powerful.
 

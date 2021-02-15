@@ -4,9 +4,7 @@ public class FightManagerService
 {
     private PlayerState playerState;
     private CardUiManager cardUiManager;
-    private PlayerUiManager playerUiManager;
     private UpgradeUiManager upgradeUiManager;
-    private FightSceneUiManager fightSceneUiManager;
     private SceneUiManager sceneUiManager;
     private UpgradeState upgradeState;
     private DeckState deckState;
@@ -34,9 +32,7 @@ public class FightManagerService
     public FightManagerService(
         CardUiManager cardUiManager,
         SceneUiManager sceneUiManager,
-        FightSceneUiManager fightSceneUiManager,
         PlayerState playerState,
-        PlayerUiManager playerUiManager,
         UpgradeUiManager upgradeUiManager,
         DeckState deckState,
         UpgradeState upgradeState,
@@ -45,8 +41,6 @@ public class FightManagerService
     {
         this.cardUiManager = cardUiManager;
         this.playerState = playerState;
-        this.playerUiManager = playerUiManager;
-        this.fightSceneUiManager = fightSceneUiManager;
         this.deckState = deckState;
         this.sceneUiManager = sceneUiManager;
         this.upgradeState = upgradeState;
@@ -78,8 +72,6 @@ public class FightManagerService
 
         sceneUiManager.startFight();
         cardUiManager.showHand(deckState.hand);
-        enemyManagerService.updateEnemyUi();
-        updateFightUi();
     }
 
     public void endTurn()
@@ -92,7 +84,6 @@ public class FightManagerService
         playerState.endTurn();
 
         cardUiManager.showHand(deckState.hand);
-        updateFightUi();
     }
 
     public void onCardPlayed(Card card)
@@ -101,8 +92,6 @@ public class FightManagerService
         playerState.onCardPlayed(card);
         deckState.playCard(card);
         audioState.onCardPlayed();
-
-        updateFightUi();
     }
 
     public void onEnemyCardPlayed(Card enemyTurn)
@@ -130,13 +119,11 @@ public class FightManagerService
         sceneUiManager.showVictoryScene();
         cardUiManager.showCardSelectUi(deckState.generateCards(3));
         upgradeUiManager.showUpgradeSelectUi(upgradeState.genRandomUpgrades(2));
-        enemyManagerService.hideEnemy();
     }
 
     public void addPlayerBlock(int block)
     {
         playerState.currBlock += block;
-        updateFightUi();
     }
 
     public void onPlayerDefeat()
@@ -147,7 +134,6 @@ public class FightManagerService
     public void addCardToDeck(Card card)
     {
         deckState.addCardToDeck(card);
-        updateFightUi();
     }
 
     public void cardDrawn(Card card)
@@ -157,7 +143,6 @@ public class FightManagerService
         {
             enemyManagerService.onEnemyCardDrawn(card);
         }
-        updateFightUi();
     }
 
     public bool isCardPlayable(Card card)
@@ -183,11 +168,5 @@ public class FightManagerService
             }
             cardDrawn(drawnCard);
         }
-    }
-
-    public void updateFightUi()
-    {
-        playerUiManager.updatePlayerUiFields();
-        fightSceneUiManager.updateSceneUi(deckState);
     }
 }

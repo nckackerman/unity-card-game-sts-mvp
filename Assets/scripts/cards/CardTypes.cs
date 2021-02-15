@@ -2,43 +2,48 @@
 {
     public static Card getBasicAttack()
     {
-        Card basicAttack = new Card();
-        basicAttack.attack = 5;
-        basicAttack.energyCost = 1;
-        basicAttack.needsTarget = true;
-        return basicAttack;
+        Card smack = new Card();
+        smack.attack = 5;
+        smack.energyCost = 1;
+        smack.needsTarget = true;
+        smack.name = "smack";
+        return smack;
     }
 
     public static Card getBasicDefend()
     {
-        Card basicDefense = new Card();
-        basicDefense.defend = 5;
-        basicDefense.energyCost = 1;
-        return basicDefense;
+        Card defend = new Card();
+        defend.defend = 5;
+        defend.energyCost = 1;
+        defend.name = "defend";
+        return defend;
     }
 
     public static Card getBetterAttack()
     {
-        Card betterAttack = new Card();
-        betterAttack.attack = 13;
-        betterAttack.energyCost = 2;
-        betterAttack.needsTarget = true;
-        return betterAttack;
+        Card haymaker = new Card();
+        haymaker.attack = 13;
+        haymaker.energyCost = 2;
+        haymaker.needsTarget = true;
+        haymaker.name = "haymaker";
+        return haymaker;
     }
 
     public static Card getBetterDefense()
     {
-        Card betterDefense = new Card();
-        betterDefense.defend = 13;
-        betterDefense.energyCost = 2;
-        return betterDefense;
+        Card turtle = new Card();
+        turtle.defend = 13;
+        turtle.energyCost = 2;
+        turtle.name = "turtle";
+        return turtle;
     }
 
     public static Card getDrawCard()
     {
-        Card drawCard = new Card();
-        drawCard.cardsToDraw = 2;
-        drawCard.energyCost = 1;
-        return drawCard;
+        Card search = new Card();
+        search.cardsToDraw = 2;
+        search.energyCost = 1;
+        search.name = "search";
+        return search;
     }
 }

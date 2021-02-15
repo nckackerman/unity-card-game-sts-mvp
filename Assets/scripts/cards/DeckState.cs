@@ -15,7 +15,7 @@ public class DeckState
         discardCards = new List<Card>();
         hand = new List<Card>();
 
-        for (int i = 0; i < 7; i++)
+        for (int i = 0; i < 4; i++)
         {
             if (i < 3)
             {

@@ -57,26 +57,7 @@ public class EnemyManagerService
         foreach (EnemyGameObject enemyGameObject in currEnemies)
         {
             enemyGameObject.transform.SetParent(enemyContainer.transform, false);
-            enemyGameObject.getEnemyTurn(0);
-        }
-        showEnemies();
-    }
-
-    public void showEnemies()
-    {
-        foreach (EnemyGameObject enemyGameObject in currEnemies)
-        {
             enemyGameObject.initialize();
-            Card newEnemyTurn = enemyGameObject.getEnemyTurn(0);
-            enemyGameObject.updateEnemyIntent(newEnemyTurn);
-        }
-    }
-
-    public void hideEnemy()
-    {
-        foreach (EnemyGameObject enemyGameObject in currEnemies)
-        {
-            enemyGameObject.gameObject.SetActive(false);
         }
     }
 
@@ -100,7 +81,6 @@ public class EnemyManagerService
                 }
             }
             Card newEnemyTurn = enemyGameObject.getEnemyTurn(turnCount);
-            enemyGameObject.updateEnemyIntent(newEnemyTurn);
         }
     }
 
@@ -116,7 +96,6 @@ public class EnemyManagerService
     public void onEnemyCardDrawn(Card card)
     {
         currEnemies[0].onEnemyCardDrawn(card);
-        currEnemies[0].updateEnemyIntent(currEnemies[0].getModifiedEnemyTurn());
     }
 
     public void damageAllEnemy(int damage)
@@ -124,14 +103,6 @@ public class EnemyManagerService
         foreach (EnemyGameObject enemyGameObject in currEnemies)
         {
             enemyGameObject.takeHit(damage);
-        }
-    }
-
-    public void updateEnemyUi()
-    {
-        foreach (EnemyGameObject enemyGameObject in currEnemies)
-        {
-            enemyGameObject.updateEnemyUi();
         }
     }
 }

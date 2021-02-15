@@ -80,8 +80,9 @@ public class CardUiManager
         cardListScene.SetActive(true);
         foreach (Card card in cards)
         {
-            CardGameObject cardInHandInstance = getCardObject(card);
-            cardInHandInstance.transform.SetParent(cardListGrid.transform, false);
+            CardGameObject listCard = getCardObject(card);
+            listCard.transform.SetParent(cardListGrid.transform, false);
+            listCard.createListCard();
         }
     }
 
@@ -105,7 +106,7 @@ public class CardUiManager
         TextMeshProUGUI cardDescription = cardInstance.transform.Find("cardDescriptionUi").gameObject.GetComponentInChildren<TextMeshProUGUI>();
         cardDescription.text = card.getCardText();
         TextMeshProUGUI cardName = cardInstance.transform.Find("cardNameUi").gameObject.GetComponentInChildren<TextMeshProUGUI>();
-        cardName.text = card.energyCost.ToString();
+        cardName.text = card.name;
         CardGameObject cardGameObject = cardInstance.GetComponent<CardGameObject>();
         cardGameObject.card = card;
 

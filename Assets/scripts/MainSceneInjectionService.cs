@@ -13,14 +13,10 @@ using TMPro;
 public class MainSceneInjectionService : MonoBehaviour
 {
     private static string prefabPath = "prefabs/";
-    private TextMeshProUGUI deckText;
-    private TextMeshProUGUI playerEnergyText;
-    private TextMeshProUGUI playerExtraDrawText;
-    private TextMeshProUGUI discardText;
+    private GameObject playerObject;
 
     private GameObject enemyContainer;
     private GameObject playerHandObject;
-    private GameObject playerHealthBar;
     private Button startNewRunButton;
     private GameObject showDiscardObject;
     private Button nextFightButton;
@@ -28,13 +24,13 @@ public class MainSceneInjectionService : MonoBehaviour
     private GameObject endTurnObject;
     private Button closeCardListButton;
     private GameObject showDeckObject;
-    private GameObject drawObject;
+    private GameObject extraDrawObject;
 
     private GameObject cardListScene;
     private GameObject cardSelectUi;
     private GameObject upgradeSelect;
     private GameObject cardListGrid;
-    private GameObject fightScene;
+    private GameObject fightSceneObject;
     private GameObject victoryScene;
     private GameObject gameOverScene;
     private GameObject startScene;
@@ -70,19 +66,16 @@ public class MainSceneInjectionService : MonoBehaviour
             gameOverScene,
             victoryScene,
             cardListScene,
-            fightScene
-        );
-        FightSceneUiManager fightSceneUiManager = new FightSceneUiManager(
-            deckText,
-            discardText
+            fightSceneObject
         );
 
-        PlayerUiManager playerUiManager = new PlayerUiManager(
-            playerState,
-            playerEnergyText,
-            playerExtraDrawText,
-            new HealthBar(playerHealthBar)
-        );
+        FightSceneGameObject fightSceneGameObject = fightSceneObject.GetComponent<FightSceneGameObject>();
+        fightSceneGameObject.initalize(fightSceneObject, deckState, playerState);
+
+
+        PlayerGameObject playerGameObject = playerObject.GetComponent<PlayerGameObject>();
+        playerGameObject.initalize(playerObject, playerState);
+
         UpgradeTypes upgradeTypes = new UpgradeTypes();
         UpgradeState upgradeState = new UpgradeState(
             upgradeTypes,
@@ -98,9 +91,7 @@ public class MainSceneInjectionService : MonoBehaviour
         FightManagerService fightManagerService = new FightManagerService(
             cardUiManager,
             sceneUiManager,
-            fightSceneUiManager,
             playerState,
-            playerUiManager,
             upgradeUiManager,
             deckState,
             upgradeState,
@@ -119,19 +110,11 @@ public class MainSceneInjectionService : MonoBehaviour
         addEventTrigger(showDeckObject).callback.AddListener((data) => cardUiManager.showCardPile(deckState.deckCards));
         addEventTrigger(showDiscardObject).callback.AddListener((data) => cardUiManager.showCardPile(deckState.discardCards));
         addEventTrigger(endTurnObject).callback.AddListener((data) => fightManagerService.endTurn());
-        addEventTrigger(drawObject).callback.AddListener((data) => fightManagerService.extraDraw());
+        addEventTrigger(extraDrawObject).callback.AddListener((data) => fightManagerService.extraDraw());
     }
 
     private void takeObjectsFromScene()
     {
-        //cards
-        deckText = GameObject.Find("deckText").GetComponent<TextMeshProUGUI>();
-
-        //gameBoard
-        discardText = GameObject.Find("discardText").GetComponent<TextMeshProUGUI>();
-        playerEnergyText = GameObject.Find("playerEnergy").GetComponent<TextMeshProUGUI>();
-        playerExtraDrawText = GameObject.Find("drawText").GetComponent<TextMeshProUGUI>();
-        playerHealthBar = GameObject.Find("playerHealthBarObject");
         playerHandObject = GameObject.Find("playerHand");
         upgradeList = GameObject.Find("UpgradeList");
         startNewRunButton = GameObject.Find("StartNewRunButton").GetComponent<Button>();
@@ -141,18 +124,18 @@ public class MainSceneInjectionService : MonoBehaviour
         showDeckObject = GameObject.Find("showDeckClickable");
         endTurnObject = GameObject.Find("EndTurnObject");
         showDiscardObject = GameObject.Find("discardClickable");
-        drawObject = GameObject.Find("DrawObject");
+        extraDrawObject = GameObject.Find("ExtraDrawObject");
 
-        //enemy
+        //sprites
         enemyContainer = GameObject.Find("enemyContainer");
+        playerObject = GameObject.Find("playerObject");
 
         //views
+        fightSceneObject = GameObject.Find("fightScene");
         startScene = GameObject.Find("startScene");
         startScene.SetActive(true);
         gameOverScene = GameObject.Find("gameOverScene");
         gameOverScene.SetActive(false);
-        fightScene = GameObject.Find("fightScene");
-        fightScene.SetActive(false);
         victoryScene = GameObject.Find("victoryScene");
         cardSelectUi = GameObject.Find("cardSelect");
         upgradeSelect = GameObject.Find("upgradeSelect");

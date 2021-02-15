@@ -16,7 +16,7 @@ public static class EnemyTypes
         EnemyGameObject enemyGameObject = enemyInstance.GetComponent<EnemyGameObject>();
 
         EnemyState basicEnemy = new EnemyState();
-        basicEnemy.maxHealth = 35;
+        basicEnemy.maxHealth = 5;
         basicEnemy.baseEnemyTurns.Add(new Card(11, 0));
         basicEnemy.baseEnemyTurns.Add(new Card(0, 10));
         basicEnemy.baseEnemyTurns.Add(new Card(5, 7));
