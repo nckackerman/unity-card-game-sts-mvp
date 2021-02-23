@@ -3,15 +3,15 @@ using UnityEngine;
 public class PlayerGameObject : MonoBehaviour
 {
     private GameObject playerInstance;
-    private PlayerState playerState;
-    private HealthBar healthBar;
+    private PlayerData playerData;
+    private HealthBarObject healthBar;
     private bool initalized = false;
 
-    public void initalize(GameObject playerObject, PlayerState playerState)
+    public void initalize(GameObject playerObject, PlayerData playerData)
     {
         this.playerInstance = playerObject;
-        this.healthBar = new HealthBar(playerObject.transform.Find("playerHealthBarObject").gameObject);
-        this.playerState = playerState;
+        this.playerData = playerData;
+        this.healthBar = new HealthBarObject(playerObject.transform.Find("playerHealthBarObject").gameObject);
         this.initalized = true;
     }
 
@@ -19,7 +19,7 @@ public class PlayerGameObject : MonoBehaviour
     {
         if (initalized)
         {
-            healthBar.updateHealth(playerState.maxHealth, playerState.currHealth, playerState.currBlock);
+            healthBar.updateHealthBar(playerData.healthBarData);
         }
     }
 }

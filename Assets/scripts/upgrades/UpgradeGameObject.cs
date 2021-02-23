@@ -1,28 +1,27 @@
 using UnityEngine;
 using UnityEngine.UI;
-using System;
 using TMPro;
 
 public class UpgradeGameObject : MonoBehaviour
 {
     public Upgrade upgrade;
+    public UpgradeActions upgradeActions;
     public GameObject tooltip;
     public bool hovering = false;
     public Vector2 startingWorldPosition;
-    public TextMeshProUGUI textMesh;
-    public Action onClickAction;
 
-    public void initUpgradeData(Upgrade upgrade)
+    public void initUpgrade(Upgrade upgrade)
     {
         this.upgrade = upgrade;
+        this.upgradeActions = upgrade.actions;
         tooltip = gameObject.transform.Find("ToolTipCanvas").gameObject.transform.Find("ToolTip").gameObject;
         tooltip.SetActive(false);
         startingWorldPosition = tooltip.transform.position;
-        textMesh = tooltip.GetComponentInChildren<TextMeshProUGUI>();
-        textMesh.text = upgrade.description;
+        TextMeshProUGUI textMesh = tooltip.GetComponentInChildren<TextMeshProUGUI>();
+        textMesh.text = upgrade.data.description;
 
         Image image = gameObject.GetComponentInChildren<Image>();
-        image.sprite = upgrade.sprite;
+        image.sprite = upgrade.data.sprite;
     }
 
     void Update()
@@ -48,9 +47,6 @@ public class UpgradeGameObject : MonoBehaviour
 
     public void onClick()
     {
-        if (onClickAction != null)
-        {
-            onClickAction();
-        }
+        upgradeActions.onClick();
     }
 }

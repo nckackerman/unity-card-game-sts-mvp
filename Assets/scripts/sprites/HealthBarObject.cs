@@ -1,7 +1,7 @@
 using UnityEngine;
 using TMPro;
 
-public class HealthBar
+public class HealthBarObject
 {
     private GameObject healthBarInstance;
     private GameObject healthMissingUi;
@@ -15,8 +15,7 @@ public class HealthBar
     private Vector2 initialHealthUiVector;
     private float maxHealthWidth = 0;
 
-
-    public HealthBar(GameObject healthBarInstance)
+    public HealthBarObject(GameObject healthBarInstance)
     {
         this.healthBarInstance = healthBarInstance;
 
@@ -32,21 +31,23 @@ public class HealthBar
         this.maxHealthWidth = Mathf.Abs(healthUi.offsetMin.x) + Mathf.Abs(healthUi.offsetMax.x);
     }
 
-    public void updateHealth(int maxHealth, int currHealth, int currBlock)
+    public void updateHealthBar(HealthBarData healthBarData)
     {
-        healthText.text = currHealth + "/" + maxHealth;
-        if (currBlock > 0)
         {
-            blockUi.SetActive(true);
-            blockText.text = currBlock.ToString();
-        }
-        else
-        {
-            blockUi.SetActive(false);
-            blockText.text = "";
-        }
+            healthText.text = healthBarData.currHealth + "/" + healthBarData.maxHealth;
+            if (healthBarData.currBlock > 0)
+            {
+                blockUi.SetActive(true);
+                blockText.text = healthBarData.currBlock.ToString();
+            }
+            else
+            {
+                blockUi.SetActive(false);
+                blockText.text = "";
+            }
 
-        float percentToReduceHealthBar = 1 - ((float)currHealth / maxHealth);
-        healthUi.offsetMax = initialHealthUiVector - new Vector2(maxHealthWidth * percentToReduceHealthBar, 0);
+            float percentToReduceHealthBar = 1 - ((float)healthBarData.currHealth / healthBarData.maxHealth);
+            healthUi.offsetMax = initialHealthUiVector - new Vector2(maxHealthWidth * percentToReduceHealthBar, 0);
+        }
     }
 }

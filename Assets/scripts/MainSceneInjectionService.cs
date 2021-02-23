@@ -12,13 +12,13 @@ using TMPro;
 
 public class MainSceneInjectionService : MonoBehaviour
 {
-    private static string prefabPath = "prefabs/";
     private GameObject playerObject;
 
     private GameObject enemyContainer;
     private GameObject playerHandObject;
     private Button startNewRunButton;
     private GameObject showDiscardObject;
+    private GameObject showTrashObject;
     private Button nextFightButton;
     private Button runItBackButton;
     private GameObject endTurnObject;
@@ -38,17 +38,20 @@ public class MainSceneInjectionService : MonoBehaviour
 
     void Start()
     {
-        //prefabs
-        GameObject upgradePrefab = Resources.Load(prefabPath + "upgradeObject") as GameObject;
-        GameObject cardPrefab = Resources.Load(prefabPath + "cardObject") as GameObject;
-        GameObject healthBarPrefab = Resources.Load(prefabPath + "healthBarObject") as GameObject;
-        GameObject enemyPrefab = Resources.Load(prefabPath + "enemyObject") as GameObject;
-
+        //Get references to GameObjects from scene
         takeObjectsFromScene();
 
-        EnemyTypes.initalize(enemyPrefab);
-        PlayerState playerState = new PlayerState();
-        DeckState deckState = new DeckState();
+        //prefabs. no dependencies.
+        GameObject upgradePrefab = Resources.Load(FilePathUtils.prefabPath + "upgradeObject") as GameObject;
+        GameObject cardPrefab = Resources.Load(FilePathUtils.prefabPath + "cardObject") as GameObject;
+        GameObject healthBarPrefab = Resources.Load(FilePathUtils.prefabPath + "healthBarObject") as GameObject;
+        GameObject enemyPrefab = Resources.Load(FilePathUtils.prefabPath + "enemyObject") as GameObject;
+
+        //Data classes. no dependencies
+        PlayerData playerData = new PlayerData();
+        DeckData deckData = new DeckData();
+
+        //Ui manager, only dependencies are GameObjects
         CardUiManager cardUiManager = new CardUiManager(
             cardPrefab,
             playerHandObject,
@@ -56,11 +59,6 @@ public class MainSceneInjectionService : MonoBehaviour
             cardListScene,
             cardSelectUi
         );
-        EnemyManagerService enemyManagerService = new EnemyManagerService(
-            enemyPrefab,
-            enemyContainer
-        );
-        EnemyManagerService.setInstance(enemyManagerService);
         SceneUiManager sceneUiManager = new SceneUiManager(
             startScene,
             gameOverScene,
@@ -68,49 +66,83 @@ public class MainSceneInjectionService : MonoBehaviour
             cardListScene,
             fightSceneObject
         );
-
-        FightSceneGameObject fightSceneGameObject = fightSceneObject.GetComponent<FightSceneGameObject>();
-        fightSceneGameObject.initalize(fightSceneObject, deckState, playerState);
-
-
-        PlayerGameObject playerGameObject = playerObject.GetComponent<PlayerGameObject>();
-        playerGameObject.initalize(playerObject, playerState);
-
-        UpgradeTypes upgradeTypes = new UpgradeTypes();
-        UpgradeState upgradeState = new UpgradeState(
-            upgradeTypes,
-            playerState
-        );
         UpgradeUiManager upgradeUiManager = new UpgradeUiManager(
             upgradeSelect,
             upgradePrefab,
-            upgradeList,
-            upgradeState
+            upgradeList
         );
 
-        FightManagerService fightManagerService = new FightManagerService(
+        //Types
+        StatusTypes statusTypes = new StatusTypes();
+        EnemyTypes enemyTypes = new EnemyTypes(enemyPrefab);
+        CardTypes cardTypes = new CardTypes();
+        cardTypes.initialize(statusTypes);
+
+        //Services
+        UpgradeService upgradeService = new UpgradeService();
+        EnemyTurnService enemyTurnService = new EnemyTurnService();
+        StatusService statusService = new StatusService(statusTypes);
+
+        EnemyService enemyService = new EnemyService(enemyTurnService, statusService);
+        CardGenerator cardGenerator = new CardGenerator(cardTypes);
+
+        PlayerService playerService = new PlayerService(playerData, sceneUiManager);
+        DeckService deckService = new DeckService(deckData, cardUiManager, playerService);
+        EnemyManagerService enemyManagerService = new EnemyManagerService(
+            enemyPrefab,
+            enemyContainer,
+            playerService,
+            enemyService,
+            enemyTurnService,
+            statusService,
+            deckService,
+            enemyTypes,
             cardUiManager,
+            cardGenerator,
             sceneUiManager,
-            playerState,
             upgradeUiManager,
-            deckState,
-            upgradeState,
-            new AudioState(),
+            upgradeService
+        );
+        CardService cardService = new CardService(enemyManagerService, playerService, new AudioState(), deckService, enemyService);
+        CardActionsService cardActionsService = new CardActionsService(deckService, playerService, cardService);
+        EnemyManagerService.setInstance(enemyManagerService);
+
+        FightSceneGameObject fightSceneGameObject = fightSceneObject.GetComponent<FightSceneGameObject>();
+        fightSceneGameObject.initalize(fightSceneObject, deckData, playerData);
+
+
+        PlayerGameObject playerGameObject = playerObject.GetComponent<PlayerGameObject>();
+        playerGameObject.initalize(playerObject, playerData);
+
+        UpgradeTypes upgradeTypes = new UpgradeTypes(playerService);
+
+        FightManagerService fightManagerService = new FightManagerService(
+            sceneUiManager,
+            cardUiManager,
+            playerService,
+            upgradeUiManager,
+            deckService,
+            deckData,
+            upgradeService,
             enemyManagerService
         );
         FightManagerService.setInstance(fightManagerService);
+        cardUiManager.initialize(cardActionsService, playerData);
+        upgradeUiManager.initialize(upgradeService);
+        deckService.initialize(enemyManagerService);
 
 
-        //init scene buttons
-        startNewRunButton.onClick.AddListener(fightManagerService.startNewRun);
-        runItBackButton.onClick.AddListener(fightManagerService.startNewRun);
+        //init scene buttons + add click events
+        startNewRunButton.onClick.AddListener(() => fightManagerService.startNewRun(upgradeTypes, cardTypes));
+        runItBackButton.onClick.AddListener(() => fightManagerService.startNewRun(upgradeTypes, cardTypes));
         nextFightButton.onClick.AddListener(fightManagerService.startFight);
         closeCardListButton.onClick.AddListener(cardUiManager.hideCardPile);
 
-        addEventTrigger(showDeckObject).callback.AddListener((data) => cardUiManager.showCardPile(deckState.deckCards));
-        addEventTrigger(showDiscardObject).callback.AddListener((data) => cardUiManager.showCardPile(deckState.discardCards));
+        addEventTrigger(showDeckObject).callback.AddListener((data) => cardUiManager.showCardPile(deckData.deckCards));
+        addEventTrigger(showDiscardObject).callback.AddListener((data) => cardUiManager.showCardPile(deckData.discardCards));
+        addEventTrigger(showTrashObject).callback.AddListener((data) => cardUiManager.showCardPile(deckData.trash));
         addEventTrigger(endTurnObject).callback.AddListener((data) => fightManagerService.endTurn());
-        addEventTrigger(extraDrawObject).callback.AddListener((data) => fightManagerService.extraDraw());
+        addEventTrigger(extraDrawObject).callback.AddListener((data) => deckService.extraDraw());
     }
 
     private void takeObjectsFromScene()
@@ -124,6 +156,7 @@ public class MainSceneInjectionService : MonoBehaviour
         showDeckObject = GameObject.Find("showDeckClickable");
         endTurnObject = GameObject.Find("EndTurnObject");
         showDiscardObject = GameObject.Find("discardClickable");
+        showTrashObject = GameObject.Find("trashClickable");
         extraDrawObject = GameObject.Find("ExtraDrawObject");
 
         //sprites

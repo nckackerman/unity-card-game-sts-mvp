@@ -8,6 +8,18 @@ This is a for-fun project to build a POC/MVP for a deckbuilder game in [Unity-2d
 Absolutely! Please reach out to nckackerman@gmail.com for any question about this code. Happy to help however I can :)
 
 ## Updates
+### 3/1/2021
+Added a handful of new cards and introduced logic + ui for applying statuses. Stauses include:
+- vulnerable -> Target takes 50% more damage
+- weak -> Target deals 25% less damage
+
+Did a substantial refactor focused on moving all game information to data classes that are passed around and updated to control UI and gamestate. Really should have started with this model, but trying to move fast and being new to Unity, I ended up with half-baked code organization that made adding features tougher than it should of been. I'm sure there is still better organization hiding in here and I expect another larger refactor down the road.
+
+Whats next?
+- Need to convert the single power card into a status.
+- Need to add more cards, enemies, and upgrades.
+- Animation POC for general combat moments. Like adding block, attacking, and statuses.
+
 ### 2/15/2021
 Worked on the most obvious bugs to improve quality of life while interacting with the game. This includes:
 - Card lists are now scrollable

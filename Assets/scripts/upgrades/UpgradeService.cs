@@ -1,30 +1,19 @@
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
-public class UpgradeState
+public class UpgradeService
 {
+
     public List<Upgrade> heldUpgrades = new List<Upgrade>();
     public List<Upgrade> upgradePool = new List<Upgrade>();
 
-    private UpgradeTypes upgradeTypes;
-    private PlayerState playerState;
-
-    public UpgradeState(
-        UpgradeTypes upgradeTypes,
-        PlayerState playerState)
+    public void initUpgrades(UpgradeTypes upgradeTypes)
     {
-        this.upgradeTypes = upgradeTypes;
-        this.playerState = playerState;
-    }
-
-    public void initUpgrades()
-    {
-        upgradePool.Add(upgradeTypes.getApple(playerState));
-        upgradePool.Add(upgradeTypes.getBanana(playerState));
-        upgradePool.Add(upgradeTypes.getCherry());
-        upgradePool.Add(upgradeTypes.getKiwi());
-
-        heldUpgrades.Add(upgradeTypes.getPineapple());
+        foreach (UpgradeTypes.UpgradeEnum upgradeEnum in Enum.GetValues(typeof(UpgradeTypes.UpgradeEnum)))
+        {
+            upgradePool.Add(upgradeTypes.getUpgradeFromEnum(upgradeEnum));
+        }
     }
 
     public List<Upgrade> genRandomUpgrades(int numUpgrades)
@@ -38,7 +27,7 @@ public class UpgradeState
                 break;
             }
 
-            int randomIndex = Random.Range(0, poolCopy.Count);
+            int randomIndex = UnityEngine.Random.Range(0, poolCopy.Count);
             upgrades.Add(poolCopy[randomIndex]);
             poolCopy.RemoveAt(randomIndex);
         }
@@ -47,14 +36,14 @@ public class UpgradeState
 
     public void addUpgrade(Upgrade upgrade)
     {
-        upgrade.onPickup();
+        upgrade.actions.onPickup();
         heldUpgrades.Add(upgrade);
         upgradePool.Remove(upgrade);
     }
 
     public void removeUpgrade(Upgrade upgrade)
     {
-        upgrade.onRemove();
+        upgrade.actions.onRemove();
         heldUpgrades.Remove(upgrade);
         upgradePool.Add(upgrade);
     }
@@ -63,7 +52,7 @@ public class UpgradeState
     {
         foreach (Upgrade upgrade in heldUpgrades)
         {
-            upgrade.onCombatStart();
+            upgrade.actions.onCombatStart();
         }
     }
 }

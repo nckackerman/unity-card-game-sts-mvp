@@ -2,92 +2,96 @@ using UnityEngine;
 
 public class UpgradeTypes
 {
-    public static string spritePath = "sprites/upgrades/";
+    private static string spritePath = "sprites/upgrades/";
 
-    public Upgrade getPineapple()
+    public PlayerService playerService;
+
+    public enum UpgradeEnum
     {
-        Upgrade pineApple = new Upgrade();
-        return pineApple;
+        apple,
+        banana,
+        cherries,
+        kiwi,
+
     }
 
-    public Upgrade getApple(PlayerState playerState)
+    public UpgradeTypes(PlayerService playerService)
     {
-        Upgrade apple = new Upgrade();
-        apple.sprite = Resources.Load<Sprite>(spritePath + "Apple");
-        apple.description = "Increase max HP by 10";
+        this.playerService = playerService;
+    }
 
-        apple.onPickupAction = () =>
+    public Upgrade getUpgradeFromEnum(UpgradeEnum upgradeEnum)
+    {
+        Upgrade upgrade = new Upgrade(upgradeEnum);
+        UpgradeData data = new UpgradeData();
+        UpgradeActions actions = new UpgradeActions();
+        if (upgradeEnum == UpgradeEnum.apple)
         {
-            playerState.maxHealth += 10;
-            playerState.currHealth += 10;
-        };
-        apple.onRemoveAction = () =>
+            int healthIncrease = 10;
+            data.sprite = Resources.Load<Sprite>(spritePath + "Apple");
+            data.description = "Increase max HP by 10";
+            data.name = "Apple";
+
+            actions.onPickupAction = () =>
+            {
+                playerService.playerData.healthBarData.maxHealth += healthIncrease;
+                playerService.playerData.healthBarData.currHealth += healthIncrease;
+            };
+            actions.onRemoveAction = () =>
+            {
+                playerService.playerData.healthBarData.maxHealth -= healthIncrease;
+            };
+        }
+        else if (upgradeEnum == UpgradeEnum.banana)
         {
-            playerState.maxHealth -= 10;
-        };
-        return apple;
-    }
+            int energyIncrease = 1;
+            data.sprite = Resources.Load<Sprite>(spritePath + "Bananas");
+            data.description = "Inrease max energy by " + energyIncrease;
+            data.name = "Banana";
 
-    public Upgrade getBanana(PlayerState playerState)
-    {
-        Upgrade banana = new Upgrade();
-        banana.sprite = Resources.Load<Sprite>(spritePath + "Bananas");
-        banana.description = "Inrease max energy by 1";
-
-        banana.onPickupAction = () =>
+            actions.onPickupAction = () =>
+            {
+                playerService.playerData.maxEnergy += energyIncrease;
+                playerService.playerData.currEnergy += energyIncrease;
+            };
+            actions.onRemoveAction = () =>
+            {
+                playerService.playerData.maxEnergy -= energyIncrease;
+                playerService.playerData.currEnergy -= energyIncrease;
+            };
+        }
+        else if (upgradeEnum == UpgradeEnum.cherries)
         {
-            playerState.maxEnergy += 1;
-            playerState.currEnergy += 1;
-        };
-        banana.onRemoveAction = () =>
+            int firstTurnDamage = 5;
+
+            data.sprite = Resources.Load<Sprite>(spritePath + "Cherries");
+            data.description = "At the start of combat, deal " + firstTurnDamage + " damage to all enemies";
+            data.name = "Cherries";
+
+            actions.onCombatStartAction = () =>
+            {
+                EnemyManagerService.getInstance().damageAllEnemy(firstTurnDamage, 1);
+            };
+        }
+        else if (upgradeEnum == UpgradeEnum.kiwi)
         {
-            playerState.maxEnergy -= 1;
-            playerState.currEnergy -= 1;
-        };
-        return banana;
-    }
+            int firstTurnBlock = 5;
 
-    public Upgrade getCherry()
-    {
-        int firstTurnDamage = 5;
-        Upgrade cherry = new Upgrade();
-        cherry.sprite = Resources.Load<Sprite>(spritePath + "Cherries");
-        cherry.description = "At the start of combat, deal " + firstTurnDamage + " damage to all enemies";
-        cherry.onCombatStartAction = () =>
+            data.sprite = Resources.Load<Sprite>(spritePath + "Kiwi");
+            data.description = "At the start of combat, gain " + firstTurnBlock + " block";
+            data.name = "Kiwi";
+
+            actions.onCombatStartAction = () =>
+            {
+                playerService.addPlayerBlock(firstTurnBlock);
+            };
+        }
+        else
         {
-            EnemyManagerService.getInstance().damageAllEnemy(firstTurnDamage);
-        };
-        return cherry;
-    }
-
-    public Upgrade getKiwi()
-    {
-        int firstTurnBlock = 5;
-        Upgrade kiwi = new Upgrade();
-        kiwi.sprite = Resources.Load<Sprite>(spritePath + "Kiwi");
-        kiwi.description = "At the start of combat, gain " + firstTurnBlock + " block";
-        kiwi.onCombatStartAction = () =>
-        {
-            FightManagerService.getInstance().addPlayerBlock(firstTurnBlock);
-        };
-        return kiwi;
-    }
-
-    public Upgrade getMelon()
-    {
-        Upgrade melon = new Upgrade();
-        return melon;
-    }
-
-    public Upgrade getOrange()
-    {
-        Upgrade orange = new Upgrade();
-        return orange;
-    }
-
-    public Upgrade getStrawberry()
-    {
-        Upgrade strawberry = new Upgrade();
-        return strawberry;
+            throw new System.Exception("invalid status enum provided: " + upgradeEnum);
+        }
+        upgrade.data = data;
+        upgrade.actions = actions;
+        return upgrade;
     }
 }

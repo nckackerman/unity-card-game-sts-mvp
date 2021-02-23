@@ -1,15 +1,15 @@
 ﻿using System;
-
 public class FightManagerService
 {
-    private PlayerState playerState;
+    private SceneUiManager sceneUiManager;
+    private PlayerService playerService;
     private CardUiManager cardUiManager;
     private UpgradeUiManager upgradeUiManager;
-    private SceneUiManager sceneUiManager;
-    private UpgradeState upgradeState;
-    private DeckState deckState;
-    private AudioState audioState;
+    private UpgradeService upgradeService;
+    private DeckService deckService;
+    private DeckData deckData;
     private EnemyManagerService enemyManagerService;
+    private CardGenerator cardGenerator;
 
     private int fightCount = 0;
     private int turnCount = 0;
@@ -30,31 +30,30 @@ public class FightManagerService
     }
 
     public FightManagerService(
-        CardUiManager cardUiManager,
         SceneUiManager sceneUiManager,
-        PlayerState playerState,
+        CardUiManager cardUiManager,
+        PlayerService playerService,
         UpgradeUiManager upgradeUiManager,
-        DeckState deckState,
-        UpgradeState upgradeState,
-        AudioState audioState,
+        DeckService deckService,
+        DeckData deckData,
+        UpgradeService upgradeService,
         EnemyManagerService enemyManagerService)
     {
-        this.cardUiManager = cardUiManager;
-        this.playerState = playerState;
-        this.deckState = deckState;
         this.sceneUiManager = sceneUiManager;
-        this.upgradeState = upgradeState;
-        this.upgradeUiManager = upgradeUiManager;
-        this.audioState = audioState;
+        this.cardUiManager = cardUiManager;
+        this.playerService = playerService;
+        this.deckService = deckService;
+        this.deckData = deckData;
+        this.upgradeService = upgradeService;
         this.enemyManagerService = enemyManagerService;
     }
 
-    public void startNewRun()
+    public void startNewRun(UpgradeTypes upgradeTypes, CardTypes cardTypes)
     {
         fightCount = 0;
-        deckState.initDeck();
-        playerState.initialize();
-        upgradeState.initUpgrades();
+        deckData.initDeck(cardTypes);
+        playerService.initialize();
+        upgradeService.initUpgrades(upgradeTypes);
 
         startFight();
     }
@@ -63,15 +62,14 @@ public class FightManagerService
     {
         fightCount++;
         turnCount = 0;
-        playerState.startFight();
-        deckState.startFight();
+        playerService.startFight();
+        deckService.startFight();
 
         enemyManagerService.initializeEnemiesForFight(fightCount);
 
-        upgradeState.triggerCombatStartActions();
+        upgradeService.triggerCombatStartActions();
 
         sceneUiManager.startFight();
-        cardUiManager.showHand(deckState.hand);
     }
 
     public void endTurn()
@@ -80,93 +78,7 @@ public class FightManagerService
         cardUiManager.destroyPlayerHandUi();
 
         enemyManagerService.enemyTurn(turnCount);
-        deckState.endTurn();
-        playerState.endTurn();
-
-        cardUiManager.showHand(deckState.hand);
-    }
-
-    public void onCardPlayed(Card card)
-    {
-        //Must call playerState.onCardPlayed before deckState.playCard
-        playerState.onCardPlayed(card);
-        deckState.playCard(card);
-        audioState.onCardPlayed();
-    }
-
-    public void onEnemyCardPlayed(Card enemyTurn)
-    {
-        playerState.takeHit(enemyTurn.attack);
-        if (playerState.currHealth <= 0)
-        {
-            onPlayerDefeat();
-        }
-    }
-
-    public void onCardPlayed(Card card, EnemyGameObject enemyGameObject)
-    {
-        onCardPlayed(card);
-        enemyGameObject.onCardPlayed(card);
-    }
-
-    public void onEnemyDefeat()
-    {
-        deckState.discardHand();
-        deckState.shuffleDiscardIntoDeck();
-        deckState.onFightEnd();
-
-        cardUiManager.destroyPlayerHandUi();
-        sceneUiManager.showVictoryScene();
-        cardUiManager.showCardSelectUi(deckState.generateCards(3));
-        upgradeUiManager.showUpgradeSelectUi(upgradeState.genRandomUpgrades(2));
-    }
-
-    public void addPlayerBlock(int block)
-    {
-        playerState.currBlock += block;
-    }
-
-    public void onPlayerDefeat()
-    {
-        sceneUiManager.showGameOver();
-    }
-
-    public void addCardToDeck(Card card)
-    {
-        deckState.addCardToDeck(card);
-    }
-
-    public void cardDrawn(Card card)
-    {
-        cardUiManager.showCardInHand(card, deckState.hand.Count);
-        if (card.isEnemycard)
-        {
-            enemyManagerService.onEnemyCardDrawn(card);
-        }
-    }
-
-    public bool isCardPlayable(Card card)
-    {
-        return card.energyCost > playerState.currEnergy;
-    }
-
-    public void extraDraw()
-    {
-        if (playerState.canExtraDraw())
-        {
-            playerState.onExtraDraw();
-            Card drawnCard = deckState.drawCard();
-            if (drawnCard.energyCost > 0)
-            {
-                CardMod cardMod = new CardMod();
-                cardMod.onDiscardAction = () =>
-                {
-                    drawnCard.energyCost++;
-                };
-                drawnCard.cardMods.Add(cardMod);
-                drawnCard.energyCost--;
-            }
-            cardDrawn(drawnCard);
-        }
+        deckService.endTurn();
+        playerService.endTurn();
     }
 }

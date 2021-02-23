@@ -4,29 +4,33 @@ using TMPro;
 public class EnemyGameObject : MonoBehaviour
 {
     private GameObject enemyInstance;
+
+    private GameObject statuses;
     private TextMeshProUGUI enemyBlockIntent;
     private TextMeshProUGUI enemyAttackIntent;
     private SpriteRenderer enemySpriteRenderer;
     private Animator enemySpriteAnimator;
     private RectTransform enemyRectTransform;
-    private HealthBar enemyHealthBar;
-    private EnemyState enemyState;
+    private HealthBarObject enemyHealthBar;
+    private StatusesObject statusesObject;
     private bool initialized = false;
+    public Enemy enemy;
 
-    public void initalize(GameObject enemyPrefab, EnemyState enemyState)
+    public void initalize(GameObject enemyPrefab, Enemy enemy)
     {
         this.enemyInstance = enemyPrefab;
 
-        this.enemyHealthBar = new HealthBar(enemyPrefab.transform.Find("enemyHealthBarObject").gameObject);
+        this.enemyHealthBar = new HealthBarObject(enemyPrefab.transform.Find("enemyHealthBarObject").gameObject);
         this.enemyBlockIntent = enemyPrefab.transform.Find("attackIntent").GetComponent<TextMeshProUGUI>();
         this.enemyAttackIntent = enemyPrefab.transform.Find("blockIntent").GetComponent<TextMeshProUGUI>();
+        this.statusesObject = new StatusesObject(enemyPrefab.transform.Find("statusesObject").gameObject);
 
 
         enemySpriteRenderer = enemyPrefab.GetComponent<SpriteRenderer>();
         enemySpriteAnimator = enemyPrefab.GetComponent<Animator>();
         enemyRectTransform = enemyPrefab.GetComponent<RectTransform>();
 
-        this.enemyState = enemyState;
+        this.enemy = enemy;
         this.initialized = true;
     }
 
@@ -34,64 +38,26 @@ public class EnemyGameObject : MonoBehaviour
     {
         if (initialized)
         {
-            enemyHealthBar.updateHealth(enemyState.maxHealth, enemyState.currHealth, enemyState.currBlock);
-            if (enemyState.currHealth <= 0)
+            enemyHealthBar.updateHealthBar(enemy.data.healthBarData);
+            statusesObject.updateEnemyStatuses(enemy);
+            if (enemy.data.healthBarData.currHealth <= 0)
             {
                 gameObject.SetActive(false);
                 EnemyManagerService.getInstance().onEnemyDefeat(this);
             }
 
-            Card enemyTurn = enemyState.getModifiedEnemyTurn();
-            enemyBlockIntent.text = "Block: " + enemyTurn.defend.ToString();
-            enemyAttackIntent.text = "Attack: " + enemyTurn.attack.ToString();
-            if (enemyTurn.attackMultiplier > 1)
+            Card enemyTurn = enemy.data.enemyTurnData.currEnemyTurn;
+            if (enemyTurn != null)
             {
-                enemyAttackIntent.text += " x " + enemyTurn.attackMultiplier.ToString();
+                double weakModifier = StatusUtils.getAppliedStatusCount(StatusTypes.StatusEnum.weak, enemy.data.statuses) > 0 ? enemy.data.weakMultiplier : 1.0;
+                enemyBlockIntent.text = "Block: " + enemyTurn.data.defend.ToString();
+                enemyAttackIntent.text = "Attack: " + ((int)(weakModifier * enemyTurn.data.attack)).ToString();
+                if (enemyTurn.data.attackMultiplier > 1)
+                {
+                    enemyAttackIntent.text += " x " + enemyTurn.data.attackMultiplier.ToString();
+                }
             }
         }
-    }
-
-    public void initialize()
-    {
-        enemyState.initialize();
-        getEnemyTurn(0);
-        //enemySpriteRenderer.sprite = enemy.sprite;
-        //enemySpriteAnimator.runtimeAnimatorController = enemy.animatorController;
-    }
-
-    public void onCardPlayed(Card card)
-    {
-        enemyState.takeHit(card.attack);
-    }
-
-    public void takeHit(int damage)
-    {
-        enemyState.takeHit(damage);
-    }
-
-    public Card getEnemyTurn(int turnCount)
-    {
-        return enemyState.getEnemyTurn(turnCount);
-    }
-
-    public Card getModifiedEnemyTurn()
-    {
-        return enemyState.getModifiedEnemyTurn();
-    }
-
-    public void onShuffle()
-    {
-        enemyState.onShuffle();
-    }
-
-    public void onEnemyCardDrawn(Card card)
-    {
-        enemyState.onEnemyCardDrawn(card);
-    }
-
-    public void updateBlock(int blockAmount)
-    {
-        enemyState.currBlock = blockAmount;
     }
 
     public void onTargeted()

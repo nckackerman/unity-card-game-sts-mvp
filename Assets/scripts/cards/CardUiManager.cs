@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 public class CardUiManager
 {
@@ -9,6 +8,8 @@ public class CardUiManager
     private GameObject playerHand;
     private GameObject cardListGrid;
     private GameObject cardListScene;
+    private PlayerData playerData;
+    public CardActionsService cardActionsService;
     public GameObject cardSelect;
 
     public CardUiManager(
@@ -24,24 +25,17 @@ public class CardUiManager
         this.cardListScene = cardListScene;
         this.cardSelect = cardSelect;
     }
-    public void showHand(List<Card> playerHand)
+
+    public void initialize(CardActionsService cardActionsService, PlayerData playerData)
     {
-        destroyPlayerHandUi();
-        FightManagerService fightManagerService = FightManagerService.getInstance();
-        for (int i = 0; i < playerHand.Count; i++)
-        {
-            Card currCard = playerHand[i];
-            fightManagerService.cardDrawn(currCard);
-        }
+        this.cardActionsService = cardActionsService;
+        this.playerData = playerData;
     }
 
     public void showCardInHand(Card card, int handSize)
     {
         CardGameObject cardInstance = getCardObject(card);
-        if (!card.isEnemycard)
-        {
-            cardInstance.createCardInHandObject();
-        }
+        cardInstance.card.actions = cardActionsService.getCardInHandActions(cardInstance);
         cardInstance.transform.SetParent(playerHand.transform, false);
         updatePlayerHandSpacing(handSize);
     }
@@ -81,8 +75,8 @@ public class CardUiManager
         foreach (Card card in cards)
         {
             CardGameObject listCard = getCardObject(card);
+            listCard.card.actions = cardActionsService.getListCardActions(listCard);
             listCard.transform.SetParent(cardListGrid.transform, false);
-            listCard.createListCard();
         }
     }
 
@@ -93,7 +87,7 @@ public class CardUiManager
         foreach (Card card in cards)
         {
             CardGameObject selectableCard = getCardObject(card);
-            selectableCard.createSelectableCard(this);
+            selectableCard.card.actions = cardActionsService.getSelectableCardActions(selectableCard, this);
             selectableCard.transform.SetParent(cardSelect.transform, false);
         }
     }
@@ -101,20 +95,8 @@ public class CardUiManager
     private CardGameObject getCardObject(Card card)
     {
         GameObject cardInstance = GameObject.Instantiate(cardPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-        TextMeshProUGUI cardEnergyText = cardInstance.transform.Find("cardEnergyUi").gameObject.GetComponentInChildren<TextMeshProUGUI>();
-        cardEnergyText.text = card.energyCost.ToString();
-        TextMeshProUGUI cardDescription = cardInstance.transform.Find("cardDescriptionUi").gameObject.GetComponentInChildren<TextMeshProUGUI>();
-        cardDescription.text = card.getCardText();
-        TextMeshProUGUI cardName = cardInstance.transform.Find("cardNameUi").gameObject.GetComponentInChildren<TextMeshProUGUI>();
-        cardName.text = card.name;
         CardGameObject cardGameObject = cardInstance.GetComponent<CardGameObject>();
-        cardGameObject.card = card;
-
-        if (card.isEnemycard)
-        {
-            GameObject backgroundImage = cardInstance.transform.Find("cardBackground").gameObject;
-            backgroundImage.GetComponent<Image>().color = ColorUtils.cardUnplayable;
-        }
+        cardGameObject.initialize(cardInstance, card, playerData);
         return cardGameObject;
     }
 
