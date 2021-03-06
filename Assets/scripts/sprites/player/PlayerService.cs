@@ -1,13 +1,18 @@
 using System.Collections.Generic;
+using System;
 public class PlayerService
 {
 
     public PlayerData playerData;
     public SceneUiManager sceneUiManager;
-    public PlayerService(PlayerData playerData, SceneUiManager sceneUiManager)
+    public StatusService statusService;
+    public PlayerGameObject playerGameObject;
+    public PlayerService(PlayerData playerData, SceneUiManager sceneUiManager, StatusService statusService, PlayerGameObject playerGameObject)
     {
         this.playerData = playerData;
         this.sceneUiManager = sceneUiManager;
+        this.statusService = statusService;
+        this.playerGameObject = playerGameObject;
     }
 
     public void initialize()
@@ -17,7 +22,9 @@ public class PlayerService
 
     public void startFight()
     {
-        playerData.powers = new List<CardPower>();
+        playerGameObject.statusesObject.removeActiveStatuses();
+
+        playerData.statuses = new List<Status>();
         playerData.currEnergy = playerData.maxEnergy;
         playerData.healthBarData.currBlock = 0;
         playerData.currExtraDraw = 0;
@@ -46,6 +53,16 @@ public class PlayerService
         playerData.healthBarData.currBlock += block;
     }
 
+
+    public void heal(int healAmount)
+    {
+        playerData.healthBarData.currHealth += healAmount;
+        if (playerData.healthBarData.currHealth > playerData.healthBarData.maxHealth)
+        {
+            playerData.healthBarData.currHealth = playerData.healthBarData.maxHealth;
+        }
+    }
+
     public bool isCardPlayable(Card card)
     {
         if (playerData.currEnergy < card.data.playerCardData.energyCost)
@@ -61,9 +78,9 @@ public class PlayerService
         playerData.currEnergy -= card.data.playerCardData.energyCost;
         playerData.healthBarData.currBlock += card.data.defend;
         playerData.memories += card.data.playerCardData.memoryCount;
-        if (card.data.playerCardData.cardPower != null)
+        if (card.data.playerCardData.statuses.Count > 0)
         {
-            playerData.powers.Add(card.data.playerCardData.cardPower);
+            statusService.addStatus(playerData.statuses, card.data.playerCardData.statuses);
         }
     }
 
@@ -83,11 +100,15 @@ public class PlayerService
     {
         playerData.currEnergy = playerData.maxEnergy;
         playerData.currExtraDraw = 0;
-        playerData.healthBarData.currBlock = 0;
-
-        foreach (CardPower power in playerData.powers)
+        if (playerData.blockToLoseEachTurn == -1)
         {
-            power.onTurnOver(playerData);
+            playerData.healthBarData.currBlock = 0;
         }
+        else
+        {
+            playerData.healthBarData.currBlock = Math.Max(0, playerData.healthBarData.currBlock - playerData.blockToLoseEachTurn);
+        }
+
+        statusService.onTurnOver(playerData.statuses, playerData, null);
     }
 }

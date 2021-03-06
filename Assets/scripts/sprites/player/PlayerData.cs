@@ -13,7 +13,9 @@ public class PlayerData
     public int memories;
     public double vulnerableMultiplier = 1.5;
     public double weakMultiplier = 0.75;
-    public List<CardPower> powers = new List<CardPower>();
+    public int blockToLoseEachTurn = -1;
+    public int nextAttackBonusDamage = 0;
+    public List<Status> statuses = new List<Status>();
 
     public void initialize()
     {

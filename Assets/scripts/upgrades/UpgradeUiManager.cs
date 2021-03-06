@@ -37,7 +37,7 @@ public class UpgradeUiManager
             upgrade.actions.onClickAction = () =>
             {
                 addUpgradeUi(upgrade);
-                upgradeService.addUpgrade(upgrade);
+                upgradeService.addUpgrade(upgradeGameObject);
                 upgradeSelect.SetActive(false);
                 destroyUpgradeSelectUi();
             };

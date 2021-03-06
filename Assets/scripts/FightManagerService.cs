@@ -9,25 +9,6 @@ public class FightManagerService
     private DeckService deckService;
     private DeckData deckData;
     private EnemyManagerService enemyManagerService;
-    private CardGenerator cardGenerator;
-
-    private int fightCount = 0;
-    private int turnCount = 0;
-    private static FightManagerService fightManagerServiceInstance;
-
-    public static FightManagerService getInstance()
-    {
-        if (fightManagerServiceInstance == null)
-        {
-            throw new Exception("Error, attempted to retrieve a null fightManagerServiceInstance");
-        }
-        return fightManagerServiceInstance;
-    }
-
-    public static void setInstance(FightManagerService instance)
-    {
-        fightManagerServiceInstance = instance;
-    }
 
     public FightManagerService(
         SceneUiManager sceneUiManager,
@@ -50,8 +31,8 @@ public class FightManagerService
 
     public void startNewRun(UpgradeTypes upgradeTypes, CardTypes cardTypes)
     {
-        fightCount = 0;
-        deckData.initDeck(cardTypes);
+        GameData.getInstance().fightData.fightCount = 0;
+        deckService.initDeck(cardTypes);
         playerService.initialize();
         upgradeService.initUpgrades(upgradeTypes);
 
@@ -60,12 +41,12 @@ public class FightManagerService
 
     public void startFight()
     {
-        fightCount++;
-        turnCount = 0;
+        GameData.getInstance().fightData.fightCount++;
+        GameData.getInstance().fightData.turnCount = 0;
         playerService.startFight();
         deckService.startFight();
 
-        enemyManagerService.initializeEnemiesForFight(fightCount);
+        enemyManagerService.initializeEnemiesForFight(GameData.getInstance().fightData.fightCount);
 
         upgradeService.triggerCombatStartActions();
 
@@ -74,10 +55,10 @@ public class FightManagerService
 
     public void endTurn()
     {
-        turnCount++;
+        GameData.getInstance().fightData.turnCount++;
         cardUiManager.destroyPlayerHandUi();
 
-        enemyManagerService.enemyTurn(turnCount);
+        enemyManagerService.enemyTurn(GameData.getInstance().fightData.turnCount);
         deckService.endTurn();
         playerService.endTurn();
     }

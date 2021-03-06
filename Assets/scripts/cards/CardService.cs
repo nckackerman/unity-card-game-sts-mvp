@@ -27,21 +27,21 @@ public class CardService
 
     public void onCardPlayed(Card card)
     {
+        card.actions.onCardPlayed();
         if (card.data.playerCardData.hitsAll)
         {
             enemyManagerService.targetAllEnemies(card);
+        }
+        else if (card.data.targetedEnemy != null)
+        {
+            enemyService.onCardPlayed(card.data.targetedEnemy.enemy, card);
         }
         //Must call playerState.onCardPlayed before deckState.playCard
         playerService.onCardPlayed(card);
         deckService.onCardPlayed(card);
         audioState.onCardPlayed();
-        //TODO: implement this
-        card.actions.onCardPlayed();
-    }
 
-    public void onCardPlayed(Card card, Enemy enemy)
-    {
-        onCardPlayed(card);
-        enemyService.onCardPlayed(enemy, card);
+        GameData.getInstance().upgradeService.triggerCardPlayedActions(card);
+        card.data.targetedEnemy = null;
     }
 }

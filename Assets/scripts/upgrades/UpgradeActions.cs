@@ -4,7 +4,7 @@ public class UpgradeActions
 {
     public Action onPickupAction;
     public Action onRemoveAction;
-    public Action onCardPlayedAction;
+    public Action<Card> onCardPlayedAction;
     public Action onCombatStartAction;
     public Action onCombatEndAction;
     public Action onTurnOverAction;
@@ -34,11 +34,11 @@ public class UpgradeActions
         }
     }
 
-    public void onCardPlayed()
+    public void onCardPlayed(Card card)
     {
         if (onCardPlayedAction != null)
         {
-            onCardPlayedAction();
+            onCardPlayedAction(card);
         }
     }
 

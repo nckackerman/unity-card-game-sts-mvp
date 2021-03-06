@@ -15,15 +15,24 @@ public class StatusesObject
 
     public void updateEnemyStatuses(Enemy enemy)
     {
-        updateStatuses(enemy.data.statuses, enemy, null);
+        updateStatuses(enemy.data.statuses, enemy.data, null);
     }
 
     public void updatePlayerStatuses(PlayerData playerData)
     {
-        //TODO: implement
+        updateStatuses(playerData.statuses, null, playerData);
     }
 
-    private void updateStatuses(List<Status> statuses, Enemy enemy, PlayerData playerData)
+    public void removeActiveStatuses()
+    {
+        foreach (StatusGameObject activeStatusObject in activeStatuses)
+        {
+            GameObject.Destroy(activeStatusObject.gameObject);
+        }
+        activeStatuses = new List<StatusGameObject>();
+    }
+
+    private void updateStatuses(List<Status> statuses, EnemyData enemyData, PlayerData playerData)
     {
         List<Status> toRemove = new List<Status>();
         foreach (Status status in statuses)
@@ -41,7 +50,7 @@ public class StatusesObject
             {
                 GameObject statusInstance = GameObject.Instantiate(statusPrefab, new Vector3(0, 0, 0), Quaternion.identity);
                 StatusGameObject statusGameObject = statusInstance.GetComponentInChildren<StatusGameObject>();
-                statusGameObject.initialize(statusInstance, status, enemy.data, playerData);
+                statusGameObject.initialize(statusInstance, status, enemyData, playerData);
                 statusInstance.transform.SetParent(statusesInstance.transform, false);
 
                 activeStatuses.Add(statusGameObject);

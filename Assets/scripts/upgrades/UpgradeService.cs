@@ -5,20 +5,18 @@ using System;
 public class UpgradeService
 {
 
-    public List<Upgrade> heldUpgrades = new List<Upgrade>();
-    public List<Upgrade> upgradePool = new List<Upgrade>();
-
+    private GameData gameData = GameData.getInstance();
     public void initUpgrades(UpgradeTypes upgradeTypes)
     {
         foreach (UpgradeTypes.UpgradeEnum upgradeEnum in Enum.GetValues(typeof(UpgradeTypes.UpgradeEnum)))
         {
-            upgradePool.Add(upgradeTypes.getUpgradeFromEnum(upgradeEnum));
+            gameData.upgradeGameData.upgradePool.Add(upgradeTypes.getUpgradeFromEnum(upgradeEnum));
         }
     }
 
     public List<Upgrade> genRandomUpgrades(int numUpgrades)
     {
-        List<Upgrade> poolCopy = new List<Upgrade>(upgradePool);
+        List<Upgrade> poolCopy = new List<Upgrade>(gameData.upgradeGameData.upgradePool);
         List<Upgrade> upgrades = new List<Upgrade>();
         for (int i = 0; i < numUpgrades; i++)
         {
@@ -34,25 +32,41 @@ public class UpgradeService
         return upgrades;
     }
 
-    public void addUpgrade(Upgrade upgrade)
+    public void addUpgrade(UpgradeGameObject upgradeGameObjecte)
     {
-        upgrade.actions.onPickup();
-        heldUpgrades.Add(upgrade);
-        upgradePool.Remove(upgrade);
+        upgradeGameObjecte.upgrade.actions.onPickup();
+        gameData.upgradeGameData.heldUpgrades.Add(upgradeGameObjecte);
+        gameData.upgradeGameData.upgradePool.Remove(upgradeGameObjecte.upgrade);
     }
 
-    public void removeUpgrade(Upgrade upgrade)
-    {
-        upgrade.actions.onRemove();
-        heldUpgrades.Remove(upgrade);
-        upgradePool.Add(upgrade);
-    }
+    // public void removeUpgrade(Upgrade upgrade)
+    // {
+    //     upgrade.actions.onRemove();
+    //     gameData.upgradeGameData.heldUpgrades.Remove(upgrade);
+    //     gameData.upgradeGameData.upgradePool.Add(upgrade);
+    // }
 
     public void triggerCombatStartActions()
     {
-        foreach (Upgrade upgrade in heldUpgrades)
+        foreach (UpgradeGameObject upgradeGameObject in gameData.upgradeGameData.heldUpgrades)
         {
-            upgrade.actions.onCombatStart();
+            upgradeGameObject.upgrade.actions.onCombatStart();
+        }
+    }
+
+    public void triggerCombatEndActions()
+    {
+        foreach (UpgradeGameObject upgradeGameObject in gameData.upgradeGameData.heldUpgrades)
+        {
+            upgradeGameObject.upgrade.actions.onCombatEnd();
+        }
+    }
+
+    public void triggerCardPlayedActions(Card card)
+    {
+        foreach (UpgradeGameObject upgradeGameObject in gameData.upgradeGameData.heldUpgrades)
+        {
+            upgradeGameObject.upgrade.actions.onCardPlayed(card);
         }
     }
 }

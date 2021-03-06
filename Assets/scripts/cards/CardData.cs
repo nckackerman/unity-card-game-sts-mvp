@@ -12,6 +12,8 @@ public class CardData
     public int attackMultiplier = 1;
     public List<Status> statuses = new List<Status>();
     public bool exhaust = false;
+    public int temporaryDmgBoost = 0;
+    public EnemyGameObject targetedEnemy = null;
 
     public List<Card> cardToAddToPlayersDecks = new List<Card>();
 

@@ -6,7 +6,7 @@ public class CardActions
 {
     public Action onCardPlayedAction;
     public Action onCardDrawnAction;
-    public Func<EnemyData, PlayerData, String> getDescriptionAction;
+    public Func<String> getDescriptionAction;
 
     public Action<Card> onClickAction;
     public Action onDragStartAction;
@@ -19,26 +19,35 @@ public class CardActions
     public Action<Collider2D> onTriggerExit2DAction;
     public Action<PointerEventData> onScrollAction;
 
-    public int getDamageAmount(int baseDamage, EnemyData enemyData, PlayerData playerData)
+    public int getDamageAmount(Card card)
     {
+        EnemyData enemyData = null;
+        if (card.data.targetedEnemy != null)
+        {
+            enemyData = card.data.targetedEnemy.enemy.data;
+        }
+        PlayerData playerData = GameData.getInstance().playerGameObject.playerData;
+        int baseDamage = card.data.attack + card.data.temporaryDmgBoost;
         double targetModifier = (enemyData != null && StatusUtils.getAppliedStatusCount(StatusTypes.StatusEnum.vulnerable, enemyData.statuses) > 0) ?
             enemyData.vulnerableMultiplier : 1;
         int playerStrength = playerData != null ? playerData.strength : 0;
-        return (int)((baseDamage + playerStrength) * targetModifier);
+        int attackBonusDamage = playerData != null ? playerData.nextAttackBonusDamage : 0;
+        return (int)((baseDamage + playerStrength + attackBonusDamage) * targetModifier);
     }
 
-    public int getBlockAmount(int baseBlock, PlayerData playerData)
+    public int getBlockAmount(Card card)
     {
+        PlayerData playerData = GameData.getInstance().playerGameObject.playerData;
         int playerDexterity = playerData != null ? playerData.dexterity : 0;
-        return baseBlock + playerDexterity;
+        return card.data.defend + playerDexterity;
     }
 
-    public String getModifiedDescription(EnemyData enemyData, PlayerData playerData, CardData cardData)
+    public String getModifiedDescription(CardData cardData)
     {
 
         if (getDescriptionAction != null)
         {
-            return getDescriptionAction(enemyData, playerData);
+            return getDescriptionAction();
         }
         return cardData.description;
     }

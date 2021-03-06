@@ -9,18 +9,5 @@ public class DeckData
     public List<Card> hand = new List<Card>();
     public List<Card> trash = new List<Card>();
     public List<Card> powerCards = new List<Card>();
-
-    public void initDeck(CardTypes cardTypes)
-    {
-        deckCards.Add(cardTypes.getCardFromEnum(CardTypes.CardEnum.threaten));
-        deckCards.Add(cardTypes.getCardFromEnum(CardTypes.CardEnum.doubleSmack));
-        deckCards.Add(cardTypes.getCardFromEnum(CardTypes.CardEnum.turtle));
-        for (int i = 0; i < 3; i++)
-        {
-            deckCards.Add(cardTypes.getCardFromEnum(CardTypes.CardEnum.smack));
-            deckCards.Add(cardTypes.getCardFromEnum(CardTypes.CardEnum.defend));
-        }
-        discardCards = new List<Card>();
-        hand = new List<Card>();
-    }
+    public List<Card> cardsToRemoveAfterFight = new List<Card>();
 }

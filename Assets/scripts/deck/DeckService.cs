@@ -5,7 +5,6 @@ public class DeckService
 {
     public List<Card> cardsPlayedThisTurn = new List<Card>();
 
-    public List<Card> cardsToRemoveAfterFight = new List<Card>();
     public DeckData deckData;
     public CardUiManager cardUiManager;
     public PlayerService playerService;
@@ -23,6 +22,19 @@ public class DeckService
         this.enemyManagerService = enemyManagerService;
     }
 
+    public void initDeck(CardTypes cardTypes)
+    {
+        deckData.deckCards.Add(cardTypes.getCardFromEnum(CardTypes.CardEnum.terrorize));
+        deckData.deckCards.Add(cardTypes.getCardFromEnum(CardTypes.CardEnum.shield));
+        for (int i = 0; i < 4; i++)
+        {
+            deckData.deckCards.Add(cardTypes.getCardFromEnum(CardTypes.CardEnum.smack));
+            deckData.deckCards.Add(cardTypes.getCardFromEnum(CardTypes.CardEnum.defend));
+        }
+        deckData.discardCards = new List<Card>();
+        deckData.hand = new List<Card>();
+    }
+
     //Shouldnt be called directly (normally). This should only be called from cardService.onCardPlayed();
     public void onCardPlayed(Card card)
     {
@@ -38,7 +50,7 @@ public class DeckService
         {
             trashCard(card);
         }
-        else if (card.data.playerCardData.cardPower != null)
+        else if (card.data.playerCardData.statuses.Count > 0)
         {
             deckData.hand.Remove(card);
             deckData.powerCards.Add(card);
@@ -95,12 +107,11 @@ public class DeckService
         if (drawnCard != null)
         {
             drawnCard.actions.onCardDrawn();
-            deckData.hand.Add(drawnCard);
             if (drawnCard.data.isEnemycard)
             {
                 enemyManagerService.onEnemyCardDrawn(drawnCard);
             }
-            cardUiManager.showCardInHand(drawnCard, deckData.hand.Count);
+            addCardToHand(drawnCard);
         }
         return drawnCard;
     }
@@ -164,13 +175,19 @@ public class DeckService
         deckData.deckCards.Add(card);
         if (card.data.isEnemycard)
         {
-            cardsToRemoveAfterFight.Add(card);
+            deckData.cardsToRemoveAfterFight.Add(card);
         }
+    }
+
+    public void addCardToHand(Card card)
+    {
+        deckData.hand.Add(card);
+        cardUiManager.showCardInHand(card, deckData.hand.Count);
     }
 
     public void onFightEnd()
     {
-        foreach (Card cardToRemove in cardsToRemoveAfterFight)
+        foreach (Card cardToRemove in deckData.cardsToRemoveAfterFight)
         {
             deckData.deckCards.Remove(cardToRemove);
         }

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 
 public class StatusService
 {
@@ -11,12 +10,12 @@ public class StatusService
         this.statusTypes = statusTypes;
     }
 
-    public void addStatus(List<Status> statuses, Card card)
+    public void addStatus(List<Status> existingStatusus, List<Status> newStatuses)
     {
         bool statusAlreadyApplied = false;
-        foreach (Status newStatus in card.data.statuses)
+        foreach (Status newStatus in newStatuses)
         {
-            foreach (Status existingStatus in statuses)
+            foreach (Status existingStatus in existingStatusus)
             {
                 if (newStatus.data.name == existingStatus.data.name)
                 {
@@ -26,13 +25,24 @@ public class StatusService
             }
             if (!statusAlreadyApplied)
             {
-                //must deep copy here
-                statuses.Add(statusTypes.getStatusFromEnum(newStatus.statusEnum));
+                Status newStatusCopy = statusTypes.getStatusFromEnum(newStatus.statusEnum);
+                newStatusCopy.data = newStatus.data.shallowCopy();
+                existingStatusus.Add(newStatusCopy);
             }
         }
     }
 
-    public void onTurnOver(List<Status> statuses)
+
+    public void onTurnOver(List<Status> statuses, PlayerData playerData, EnemyData enemyData)
+    {
+        foreach (Status status in statuses)
+        {
+            status.data.statusCount += status.data.statusDeltaPerTurn;
+            status.actions.onTurnOver(status.data);
+        }
+    }
+
+    public void onFightOver(List<Status> statuses, PlayerData playerData)
     {
         foreach (Status status in statuses)
         {

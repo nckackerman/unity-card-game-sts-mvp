@@ -8,6 +8,16 @@ This is a for-fun project to build a POC/MVP for a deckbuilder game in [Unity-2d
 Absolutely! Please reach out to nckackerman@gmail.com for any question about this code. Happy to help however I can :)
 
 ## Updates
+### 3/5/2021
+- Added a handful of new cards and relics
+- Moved code towards a global state object, something I tried to stay away from initially. Global state seems appropriate here since:
+
+1. This game is a monolith in a way. Not sure how much of a typical web-MVC pattern helps game development. Said another way, most parts of the game need to know about most other parts in order to do something interesting.
+2. Having a global state object can be the starting points for saving game data. A simple implementation could be serializing and deserializing this large object.
+
+Whats next
+- POC for game/fight animations
+
 ### 3/1/2021
 Added a handful of new cards and introduced logic + ui for applying statuses. Stauses include:
 - vulnerable -> Target takes 50% more damage

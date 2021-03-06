@@ -2,16 +2,18 @@ using UnityEngine;
 
 public class PlayerGameObject : MonoBehaviour
 {
-    private GameObject playerInstance;
-    private PlayerData playerData;
-    private HealthBarObject healthBar;
-    private bool initalized = false;
+    public GameObject playerInstance;
+    public PlayerData playerData;
+    public HealthBarObject healthBar;
+    public StatusesObject statusesObject;
+    public bool initalized = false;
 
     public void initalize(GameObject playerObject, PlayerData playerData)
     {
         this.playerInstance = playerObject;
         this.playerData = playerData;
         this.healthBar = new HealthBarObject(playerObject.transform.Find("playerHealthBarObject").gameObject);
+        this.statusesObject = new StatusesObject(playerObject.transform.Find("statusesObject").gameObject);
         this.initalized = true;
     }
 
@@ -20,6 +22,7 @@ public class PlayerGameObject : MonoBehaviour
         if (initalized)
         {
             healthBar.updateHealthBar(playerData.healthBarData);
+            statusesObject.updatePlayerStatuses(playerData);
         }
     }
 }

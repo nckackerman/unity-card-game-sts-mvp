@@ -3,19 +3,29 @@ using System;
 public class StatusActions
 {
 
-    public Func<EnemyData, PlayerData, String> getDescriptionAction;
+    public Action<StatusData> onTurnOverAction;
 
-    public String getModifiedDescription(EnemyData enemyData, PlayerData playerData, StatusData statusData)
+    public Func<StatusData, PlayerData, EnemyData, String> getDescriptionAction;
+
+    public void onTurnOver(StatusData statusData)
+    {
+        if (onTurnOverAction != null)
+        {
+            onTurnOverAction(statusData);
+        }
+    }
+
+    public String getModifiedDescription(StatusData statusData, PlayerData playerData, EnemyData enemyData)
     {
 
         if (getDescriptionAction != null)
         {
-            return getDescriptionAction(enemyData, playerData);
+            return getDescriptionAction(statusData, playerData, enemyData);
         }
         return statusData.description;
     }
 
-    public string getVulnerableModifier(EnemyData enemyData, PlayerData playerData)
+    public string getVulnerableModifier(PlayerData playerData, EnemyData enemyData)
     {
         if (enemyData != null)
         {
@@ -28,7 +38,7 @@ public class StatusActions
         return "50%";
     }
 
-    public string getWeakModifier(EnemyData enemyData, PlayerData playerData)
+    public string getWeakModifier(PlayerData playerData, EnemyData enemyData)
     {
         if (enemyData != null)
         {

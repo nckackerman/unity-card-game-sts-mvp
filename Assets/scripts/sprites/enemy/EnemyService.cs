@@ -1,4 +1,5 @@
 using System.Linq;
+using UnityEngine;
 
 public class EnemyService
 {
@@ -27,17 +28,21 @@ public class EnemyService
     public void onCardPlayed(Enemy enemy, Card card)
     {
         takeHit(enemy, card.data.attack, card.data.attackMultiplier);
-        statusService.addStatus(enemy.data.statuses, card);
+        statusService.addStatus(enemy.data.statuses, card.data.statuses);
     }
 
     public void takeHit(Enemy enemy, int damage, int attackMultiplier)
     {
+        if (damage <= 0)
+        {
+            return;
+        }
         for (int i = 0; i < attackMultiplier; i++)
         {
-            int modifiedDamage = damage;
+            int modifiedDamage = damage + GameData.getInstance().playerGameObject.playerData.nextAttackBonusDamage;
             if (enemy.data.statuses.Where(status => status.data.name == "Vulnerable").Count() > 0)
             {
-                modifiedDamage = (int)(damage * enemy.data.vulnerableMultiplier);
+                modifiedDamage = (int)(modifiedDamage * enemy.data.vulnerableMultiplier);
             }
             if (enemy.data.healthBarData.currBlock >= modifiedDamage)
             {

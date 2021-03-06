@@ -49,11 +49,11 @@ public class CardUiManager
         }
         else if (handSize > 7)
         {
-            gridLayout.spacing = new Vector2(-65, 0);
+            gridLayout.spacing = new Vector2(-55, 0);
         }
         else if (handSize > 5)
         {
-            gridLayout.spacing = new Vector2(-55, 0);
+            gridLayout.spacing = new Vector2(-45, 0);
         }
         else
         {
@@ -75,8 +75,8 @@ public class CardUiManager
         foreach (Card card in cards)
         {
             CardGameObject listCard = getCardObject(card);
-            listCard.card.actions = cardActionsService.getListCardActions(listCard);
             listCard.transform.SetParent(cardListGrid.transform, false);
+            listCard.card.actions = cardActionsService.getListCardActions(listCard);
         }
     }
 

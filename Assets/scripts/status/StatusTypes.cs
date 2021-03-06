@@ -5,41 +5,58 @@ public class StatusTypes
     {
         vulnerable,
         weak,
+        armor
     }
 
     public Status getStatusFromEnum(StatusEnum statusEnum)
     {
         Status status = new Status(statusEnum);
-        StatusData statusData = new StatusData();
-        StatusActions statusActions = new StatusActions();
+        StatusData data = new StatusData();
+        StatusActions actions = new StatusActions();
         if (statusEnum == StatusEnum.vulnerable)
         {
-            statusData.name = "Vulnerable";
-            statusActions.getDescriptionAction = (EnemyData enemyData, PlayerData playerData) =>
+            data.name = "Vulnerable";
+            actions.getDescriptionAction = (StatusData statusData, PlayerData playerData, EnemyData enemyData) =>
             {
-                return "Take " + statusActions.getVulnerableModifier(enemyData, playerData) + " more damage";
+                return "Take " + actions.getVulnerableModifier(playerData, enemyData) + " more damage";
 
             };
-            statusData.description = statusActions.getModifiedDescription(null, null, statusData);
-            statusData.color = ColorUtils.vulnerable;
+            data.description = actions.getModifiedDescription(data, null, null);
+            data.color = ColorUtils.vulnerable;
         }
         else if (statusEnum == StatusEnum.weak)
         {
-            statusData.name = "Weak";
-            statusActions.getDescriptionAction = (EnemyData enemyData, PlayerData playerData) =>
+            data.name = "Weak";
+            actions.getDescriptionAction = (StatusData statusData, PlayerData playerData, EnemyData enemyData) =>
             {
-                return "Deal " + statusActions.getWeakModifier(enemyData, playerData) + " less damage";
+                return "Deal " + actions.getWeakModifier(playerData, enemyData) + " less damage";
 
             };
-            statusData.description = statusActions.getModifiedDescription(null, null, statusData);
-            statusData.color = ColorUtils.weak;
+            data.description = actions.getModifiedDescription(data, null, null);
+            data.color = ColorUtils.weak;
+        }
+        else if (statusEnum == StatusEnum.armor)
+        {
+            data.name = "Armor";
+            actions.getDescriptionAction = (StatusData statusData, PlayerData playerData, EnemyData enemyData) =>
+            {
+                return "Gain " + statusData.statusCount + " block at the start of your turn.";
+
+            };
+            actions.onTurnOverAction = (StatusData statusData) =>
+            {
+                PlayerData playerData = GameData.getInstance().playerGameObject.playerData;
+                playerData.healthBarData.currBlock += statusData.statusCount;
+            };
+            data.description = actions.getModifiedDescription(data, null, null);
+            data.color = ColorUtils.armor;
         }
         else
         {
             throw new System.Exception("invalid status enum provided: " + statusEnum);
         }
-        status.data = statusData;
-        status.statusActions = statusActions;
+        status.data = data;
+        status.actions = actions;
         return status;
     }
 }

@@ -26,7 +26,7 @@ public class EnemyTypes
         };
 
         //basicEnemy.animatorController = Resources.Load<RuntimeAnimatorController>(spritePath + "MaskManController");
-        EnemyData data = new EnemyData(new HealthBarData(50), enemyTurnData);
+        EnemyData data = new EnemyData(new HealthBarData(40), enemyTurnData);
         Enemy enemy = new Enemy(data, enemyActions);
         enemyGameObject.initalize(enemyInstance, enemy);
         return enemyGameObject;
@@ -56,7 +56,7 @@ public class EnemyTypes
 
         //basicEnemy.animatorController = Resources.Load<RuntimeAnimatorController>(spritePath + "MaskManController");
 
-        EnemyData data = new EnemyData(new HealthBarData(44), enemyTurnData);
+        EnemyData data = new EnemyData(new HealthBarData(60), enemyTurnData);
         Enemy enemy = new Enemy(data, enemyActions);
         enemyGameObject.initalize(enemyInstance, enemy);
         return enemyGameObject;

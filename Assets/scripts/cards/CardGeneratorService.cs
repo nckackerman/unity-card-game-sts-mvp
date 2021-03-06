@@ -1,8 +1,6 @@
 using System.Collections.Generic;
-using System.Linq;
-using System;
 
-public class CardGenerator
+public class CardGeneratorService
 {
 
     public int rareCardChance = 5;
@@ -10,7 +8,7 @@ public class CardGenerator
     public int commonChance = 60;
     public CardTypes cardTypes;
 
-    public CardGenerator(CardTypes cardTypes)
+    public CardGeneratorService(CardTypes cardTypes)
     {
         this.cardTypes = cardTypes;
     }

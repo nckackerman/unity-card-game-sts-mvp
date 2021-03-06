@@ -17,8 +17,9 @@ public class EnemyManagerService
     private SceneUiManager sceneUiManager;
     private UpgradeService upgradeService;
     private UpgradeUiManager upgradeUiManager;
-    private CardGenerator cardGenerator;
-    public List<EnemyGameObject> currEnemies = new List<EnemyGameObject>();
+
+    private GameData gameData = GameData.getInstance();
+    private CardGeneratorService cardGeneratorService;
 
     public EnemyManagerService(
         GameObject enemyObjectPrefab,
@@ -30,7 +31,7 @@ public class EnemyManagerService
         DeckService deckService,
         EnemyTypes enemyTypes,
         CardUiManager cardUiManager,
-        CardGenerator cardGenerator,
+        CardGeneratorService cardGeneratorService,
         SceneUiManager sceneUiManager,
         UpgradeUiManager upgradeUiManager,
         UpgradeService upgradeService
@@ -45,7 +46,7 @@ public class EnemyManagerService
         this.deckService = deckService;
         this.enemyTypes = enemyTypes;
         this.cardUiManager = cardUiManager;
-        this.cardGenerator = cardGenerator;
+        this.cardGeneratorService = cardGeneratorService;
         this.sceneUiManager = sceneUiManager;
         this.upgradeUiManager = upgradeUiManager;
         this.upgradeService = upgradeService;
@@ -76,18 +77,18 @@ public class EnemyManagerService
 
         if (fightCount == 1)
         {
-            currEnemies.Add(enemyTypes.getFirstEnemy());
+            gameData.currEnemies.Add(enemyTypes.getFirstEnemy());
         }
         else if (fightCount == 2)
         {
-            currEnemies.Add(enemyTypes.getSecondEnemy());
+            gameData.currEnemies.Add(enemyTypes.getSecondEnemy());
         }
         else
         {
-            currEnemies.Add(enemyTypes.getBoss());
+            gameData.currEnemies.Add(enemyTypes.getBoss());
         }
 
-        foreach (EnemyGameObject enemyGameObject in currEnemies)
+        foreach (EnemyGameObject enemyGameObject in gameData.currEnemies)
         {
             enemyGameObject.transform.SetParent(enemyContainer.transform, false);
             enemyService.initializeEnemy(enemyGameObject.enemy);
@@ -96,7 +97,7 @@ public class EnemyManagerService
 
     public void enemyTurn(int turnCount)
     {
-        foreach (EnemyGameObject enemyGameObject in currEnemies)
+        foreach (EnemyGameObject enemyGameObject in gameData.currEnemies)
         {
             Enemy currEnemy = enemyGameObject.enemy;
             Card enemyTurn = enemyTurnService.getModifiedEnemyTurn(currEnemy);
@@ -114,35 +115,36 @@ public class EnemyManagerService
                     deckService.addCardToDeck(cardToAdd);
                 }
             }
-            statusService.onTurnOver(currEnemy.data.statuses);
+            statusService.onTurnOver(currEnemy.data.statuses, null, currEnemy.data);
             Card newEnemyTurn = enemyTurnService.updateEnemyTurn(currEnemy, turnCount);
         }
     }
 
     public void onEnemyDefeat(EnemyGameObject enemy)
     {
-        currEnemies.Remove(enemy);
-        if (currEnemies.Count == 0)
+        gameData.currEnemies.Remove(enemy);
+        if (gameData.currEnemies.Count == 0)
         {
             deckService.discardHand();
             deckService.shuffleDiscardIntoDeck();
             deckService.onFightEnd();
 
-            cardUiManager.destroyPlayerHandUi();
+            upgradeService.triggerCombatEndActions();
+
             sceneUiManager.showVictoryScene();
-            cardUiManager.showCardSelectUi(cardGenerator.generateCards(3));
+            cardUiManager.showCardSelectUi(cardGeneratorService.generateCards(3));
             upgradeUiManager.showUpgradeSelectUi(upgradeService.genRandomUpgrades(2));
         }
     }
 
     public void onEnemyCardDrawn(Card card)
     {
-        enemyService.onEnemyCardDrawn(currEnemies[0].enemy, card);
+        enemyService.onEnemyCardDrawn(gameData.currEnemies[0].enemy, card);
     }
 
     public void damageAllEnemy(int damage, int attackMultiplier)
     {
-        foreach (EnemyGameObject enemyGameObject in currEnemies)
+        foreach (EnemyGameObject enemyGameObject in gameData.currEnemies)
         {
             enemyService.takeHit(enemyGameObject.enemy, damage, attackMultiplier);
         }
@@ -150,7 +152,7 @@ public class EnemyManagerService
 
     public void targetAllEnemies(Card card)
     {
-        foreach (EnemyGameObject enemyGameObject in currEnemies)
+        foreach (EnemyGameObject enemyGameObject in gameData.currEnemies)
         {
             enemyService.onCardPlayed(enemyGameObject.enemy, card);
         }

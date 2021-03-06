@@ -20,7 +20,15 @@ public class CardTypes
         followUp,
         doubleSmack,
         threaten,
+        terrorize,
         fortify,
+        deflect,
+        sword,
+        shield,
+        shatter,
+        hiddenDaggers,
+        dagger,
+        reload
     }
 
     public List<CardEnum> obtainableCards;
@@ -44,11 +52,11 @@ public class CardTypes
             data.playerCardData.needsTarget = true;
             data.playerCardData.memoryCount = 1;
             data.playerCardData.energyCost = 1;
-            actions.getDescriptionAction = (EnemyData enemyData, PlayerData playerData) =>
+            actions.getDescriptionAction = () =>
             {
-                return "Deal " + actions.getDamageAmount(data.attack, enemyData, playerData) + " damage.";
+                return "Deal " + actions.getDamageAmount(card) + " damage.";
             };
-            data.description = actions.getModifiedDescription(null, null, data);
+            data.description = actions.getModifiedDescription(data);
 
             data.name = "smack";
         }
@@ -57,12 +65,12 @@ public class CardTypes
             data.defend = 5;
             data.playerCardData.memoryCount = 1;
             data.playerCardData.energyCost = 1;
-            actions.getDescriptionAction = (EnemyData enemyData, PlayerData playerData) =>
+            actions.getDescriptionAction = () =>
             {
-                return "Gain " + actions.getBlockAmount(data.defend, playerData) + " block.";
+                return "Gain " + actions.getBlockAmount(card) + " block.";
 
             };
-            data.description = actions.getModifiedDescription(null, null, data);
+            data.description = actions.getModifiedDescription(data);
 
             data.name = "defend";
         }
@@ -73,24 +81,25 @@ public class CardTypes
             data.playerCardData.needsTarget = true;
             data.name = "haymaker";
 
-            actions.getDescriptionAction = (EnemyData enemyData, PlayerData playerData) =>
+            actions.getDescriptionAction = () =>
             {
-                return "Deal " + actions.getDamageAmount(data.attack, enemyData, playerData) + " damage.";
+                return "Deal " + actions.getDamageAmount(card) + " damage.";
 
             };
-            data.description = actions.getModifiedDescription(null, null, data);
+            data.description = actions.getModifiedDescription(data);
 
         }
         else if (cardEnum == CardEnum.turtle)
         {
             data.defend = 13;
+            data.playerCardData.energyCost = 2;
             data.name = "turtle";
-            actions.getDescriptionAction = (EnemyData enemyData, PlayerData playerData) =>
+            actions.getDescriptionAction = () =>
             {
-                return "Gain " + actions.getBlockAmount(data.defend, playerData) + " block.";
+                return "Gain " + actions.getBlockAmount(card) + " block.";
 
             };
-            data.description = actions.getModifiedDescription(null, null, data);
+            data.description = actions.getModifiedDescription(data);
         }
         else if (cardEnum == CardEnum.search)
         {
@@ -101,17 +110,17 @@ public class CardTypes
         else if (cardEnum == CardEnum.swordAndShield)
         {
             data.attack = 7;
-            data.defend = 3;
+            data.defend = 4;
             data.playerCardData.energyCost = 1;
             data.playerCardData.needsTarget = true;
 
-            actions.getDescriptionAction = (EnemyData enemyData, PlayerData playerData) =>
+            actions.getDescriptionAction = () =>
             {
-                return "Gain " + actions.getBlockAmount(data.defend, playerData) + " block" +
-                "\n" + "and deal " + actions.getDamageAmount(data.attack, enemyData, playerData) + " damage.";
+                return "Gain " + actions.getBlockAmount(card) + " block" +
+                "\n" + "and deal " + actions.getDamageAmount(card) + " damage.";
 
             };
-            data.description = actions.getModifiedDescription(null, null, data);
+            data.description = actions.getModifiedDescription(data);
 
             data.name = "swordNshield";
         }
@@ -121,12 +130,12 @@ public class CardTypes
             data.playerCardData.energyCost = 1;
             data.playerCardData.needsTarget = true;
             data.playerCardData.firstCardPlayed = true;
-            actions.getDescriptionAction = (EnemyData enemyData, PlayerData playerData) =>
+            actions.getDescriptionAction = () =>
             {
-                return "Must be played first." + "\n" + "Deal " + actions.getDamageAmount(data.attack, enemyData, playerData) + " damage.";
+                return "Must be played first." + "\n" + "Deal " + actions.getDamageAmount(card) + " damage.";
 
             };
-            data.description = actions.getModifiedDescription(null, null, data);
+            data.description = actions.getModifiedDescription(data);
 
             data.name = "first strike";
         }
@@ -135,12 +144,12 @@ public class CardTypes
             data.attack = 7;
             data.playerCardData.energyCost = 1;
             data.playerCardData.hitsAll = true;
-            actions.getDescriptionAction = (EnemyData enemyData, PlayerData playerData) =>
+            actions.getDescriptionAction = () =>
             {
-                return "Deal " + actions.getDamageAmount(data.attack, null, null) + " damage to all enemies.";
+                return "Deal " + actions.getDamageAmount(card) + " damage to all enemies.";
 
             };
-            data.description = actions.getModifiedDescription(null, null, data);
+            data.description = actions.getModifiedDescription(data);
 
             data.name = "sweep";
         }
@@ -150,14 +159,28 @@ public class CardTypes
             data.cardsToDraw = 1;
             data.playerCardData.energyCost = 1;
             data.playerCardData.needsTarget = true;
-            actions.getDescriptionAction = (EnemyData enemyData, PlayerData playerData) =>
+            actions.getDescriptionAction = () =>
             {
-                return "Deal " + actions.getDamageAmount(data.attack, enemyData, playerData) + " damage and draw " + data.cardsToDraw + " card.";
+                return "Deal " + actions.getDamageAmount(card) + " damage and draw " + data.cardsToDraw + " card.";
 
             };
-            data.description = actions.getModifiedDescription(null, null, data);
+            data.description = actions.getModifiedDescription(data);
 
             data.name = "follow up";
+        }
+        else if (cardEnum == CardEnum.deflect)
+        {
+            data.cardsToDraw = 1;
+            data.defend = 8;
+            data.playerCardData.energyCost = 1;
+            actions.getDescriptionAction = () =>
+            {
+                return "Gain " + actions.getBlockAmount(card) + " block and draw " + data.cardsToDraw + " card.";
+
+            };
+            data.description = actions.getModifiedDescription(data);
+
+            data.name = "deflect";
         }
         else if (cardEnum == CardEnum.doubleSmack)
         {
@@ -165,19 +188,18 @@ public class CardTypes
             data.attackMultiplier = 2;
             data.playerCardData.energyCost = 1;
             data.playerCardData.needsTarget = true;
-            actions.getDescriptionAction = (EnemyData enemyData, PlayerData playerData) =>
+            actions.getDescriptionAction = () =>
             {
-                return "Deal " + actions.getDamageAmount(data.attack, enemyData, playerData) + " damage " + data.attackMultiplier + " times.";
+                return "Deal " + actions.getDamageAmount(card) + " damage " + data.attackMultiplier + " times.";
 
             };
-            data.description = actions.getModifiedDescription(null, null, data);
+            data.description = actions.getModifiedDescription(data);
 
             data.name = "double smack";
         }
         else if (cardEnum == CardEnum.threaten)
         {
-            data.exhaust = true;
-            data.playerCardData.hitsAll = true;
+            data.playerCardData.needsTarget = true;
             data.playerCardData.energyCost = 1;
             Status vulnerable = statusTypes.getStatusFromEnum(StatusTypes.StatusEnum.vulnerable);
             data.statuses.Add(vulnerable);
@@ -185,33 +207,151 @@ public class CardTypes
             Status weak = statusTypes.getStatusFromEnum(StatusTypes.StatusEnum.weak);
             data.statuses.Add(weak);
 
-            actions.getDescriptionAction = (EnemyData enemyData, PlayerData playerData) =>
+            actions.getDescriptionAction = () =>
             {
-                return "Apply " + vulnerable.data.statusCount + " vulnerable and " + weak.data.statusCount + " weak. Exhaust.";
+                return "Apply " + vulnerable.data.statusCount + " vulnerable and " + weak.data.statusCount + " weak.";
 
             };
-            data.description = actions.getModifiedDescription(null, null, data);
+            data.description = actions.getModifiedDescription(data);
 
             data.name = "threaten";
         }
+        else if (cardEnum == CardEnum.terrorize)
+        {
+            data.playerCardData.hitsAll = true;
+            data.exhaust = true;
+            data.playerCardData.energyCost = 2;
+            Status vulnerable = statusTypes.getStatusFromEnum(StatusTypes.StatusEnum.vulnerable);
+            vulnerable.data.statusCount = 2;
+            data.statuses.Add(vulnerable);
+
+            Status weak = statusTypes.getStatusFromEnum(StatusTypes.StatusEnum.weak);
+            weak.data.statusCount = 2;
+            data.statuses.Add(weak);
+
+            actions.getDescriptionAction = () =>
+            {
+                return "Apply " + vulnerable.data.statusCount + " vulnerable and " + weak.data.statusCount + " weak to all enemies. Exhaust.";
+
+            };
+            data.description = actions.getModifiedDescription(data);
+
+            data.name = "terrorize";
+        }
         else if (cardEnum == CardEnum.fortify)
         {
-            int defendAmount = 4;
+            Status armor = statusTypes.getStatusFromEnum(StatusTypes.StatusEnum.armor);
+            armor.data.statusDeltaPerTurn = 0;
+            armor.data.statusCount = 4;
+            data.playerCardData.statuses.Add(armor);
+
+            data.exhaust = true;
             data.playerCardData.energyCost = 1;
-            actions.getDescriptionAction = (EnemyData enemyData, PlayerData playerData) =>
+            actions.getDescriptionAction = () =>
             {
-                return "Gain " + defendAmount + " block at the start of each turn. Removed.";
+                return armor.actions.getModifiedDescription(armor.data, null, null) + "\n" + "Removed.";
 
             };
-            data.description = actions.getModifiedDescription(null, null, data);
-            CardPower cardPower = new CardPower();
-            cardPower.onTurnOverAction = (PlayerData playerState) =>
-            {
-                playerState.healthBarData.currBlock += defendAmount;
-            };
-            data.playerCardData.cardPower = cardPower;
+            data.description = actions.getModifiedDescription(data);
 
             data.name = "fortify";
+        }
+        else if (cardEnum == CardEnum.sword)
+        {
+            data.attack = 5;
+            data.playerCardData.needsTarget = true;
+            actions.getDescriptionAction = () =>
+            {
+                return "Deal " + actions.getDamageAmount(card) + " damage.";
+
+            };
+            data.description = actions.getModifiedDescription(data);
+            data.name = "sword";
+        }
+        else if (cardEnum == CardEnum.shield)
+        {
+            data.defend = 3;
+            actions.getDescriptionAction = () =>
+            {
+                return "Gain " + actions.getBlockAmount(card) + " block.";
+
+            };
+            data.description = actions.getModifiedDescription(data);
+            data.name = "shield";
+        }
+        else if (cardEnum == CardEnum.shatter)
+        {
+            data.attack = 12;
+            data.exhaust = true;
+            data.playerCardData.energyCost = 1;
+            data.playerCardData.hitsAll = true;
+            actions.getDescriptionAction = () =>
+            {
+                return "Deal " + actions.getDamageAmount(card) + " damage to all enemies. Exhaust.";
+
+            };
+            data.description = actions.getModifiedDescription(data);
+            data.name = "shatter";
+        }
+        else if (cardEnum == CardEnum.hiddenDaggers)
+        {
+            data.attack = 8;
+            data.playerCardData.energyCost = 1;
+            data.playerCardData.needsTarget = true;
+            actions.getDescriptionAction = () =>
+            {
+                return "Deal " + actions.getDamageAmount(card) + " damage and add one dagger to your hand.";
+
+            };
+            actions.onCardPlayedAction = () =>
+            {
+                Card newDagger = getCardFromEnum(CardEnum.dagger);
+                GameData.getInstance().deckService.addCardToHand(newDagger);
+                GameData.getInstance().deckService.deckData.cardsToRemoveAfterFight.Add(newDagger);
+            };
+            data.description = actions.getModifiedDescription(data);
+            data.name = "hiddenDaggers";
+        }
+        else if (cardEnum == CardEnum.dagger)
+        {
+            data.attack = 3;
+            data.playerCardData.needsTarget = true;
+            actions.getDescriptionAction = () =>
+            {
+                return "Deal " + actions.getDamageAmount(card) + " damage.";
+
+            };
+            data.description = actions.getModifiedDescription(data);
+            data.name = "dagger";
+        }
+        else if (cardEnum == CardEnum.reload)
+        {
+            data.exhaust = true;
+            data.playerCardData.needsTarget = false;
+            actions.getDescriptionAction = () =>
+            {
+                return "Move all dagger cards from discard pile to your hand. Exhaust.";
+
+            };
+            actions.onCardPlayedAction = () =>
+            {
+                List<Card> daggerCards = new List<Card>();
+                foreach (Card discardCard in GameData.getInstance().deckData.discardCards)
+                {
+                    if (discardCard.cardEnum == CardEnum.dagger)
+                    {
+                        daggerCards.Add(discardCard);
+                    }
+                }
+
+                foreach (Card daggerCard in daggerCards)
+                {
+                    GameData.getInstance().deckService.addCardToHand(daggerCard);
+                    GameData.getInstance().deckService.deckData.discardCards.Remove(daggerCard);
+                }
+            };
+            data.description = actions.getModifiedDescription(data);
+            data.name = "reload";
         }
         else
         {

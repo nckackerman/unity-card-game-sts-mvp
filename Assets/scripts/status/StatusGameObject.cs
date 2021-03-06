@@ -40,7 +40,7 @@ public class StatusGameObject : MonoBehaviour, IPointerEnterHandler, IPointerExi
     {
         if (initalized)
         {
-            toolTipText.text = status.statusActions.getModifiedDescription(enemyData, playerData, status.data);
+            toolTipText.text = status.actions.getModifiedDescription(status.data, playerData, enemyData);
             statusCount.text = status.data.statusCount.ToString();
         }
     }

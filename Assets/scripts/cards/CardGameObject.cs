@@ -6,8 +6,6 @@ using TMPro;
 
 public class CardGameObject : MonoBehaviour, IScrollHandler, IBeginDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler
 {
-    public Action<Collider2D> onTriggerEnter2DAction;
-    public Action<Collider2D> onTriggerExit2DAction;
     public Card card;
 
     private TextMeshProUGUI cardEnergyCount;
@@ -27,7 +25,7 @@ public class CardGameObject : MonoBehaviour, IScrollHandler, IBeginDragHandler, 
         cardName = cardInstance.transform.Find("cardNameUi").gameObject.GetComponentInChildren<TextMeshProUGUI>();
         cardMemory = cardInstance.transform.Find("cardMemoryText").gameObject.GetComponentInChildren<TextMeshProUGUI>();
         backgroundImage = cardInstance.transform.Find("cardBackground").gameObject;
-        cardDescription.text = card.actions.getModifiedDescription(null, playerData, card.data);
+        cardDescription.text = card.actions.getModifiedDescription(card.data);
         cardEnergyCount.text = card.data.playerCardData.energyCost.ToString();
         cardName.text = card.data.name;
         if (card.data.playerCardData.memoryCount > 0)
@@ -47,6 +45,7 @@ public class CardGameObject : MonoBehaviour, IScrollHandler, IBeginDragHandler, 
         if (initialized)
         {
             card.actions.onUpdate();
+            cardDescription.text = card.actions.getModifiedDescription(card.data);
         }
     }
 
@@ -56,14 +55,13 @@ public class CardGameObject : MonoBehaviour, IScrollHandler, IBeginDragHandler, 
         EnemyGameObject curr = other.transform.gameObject.GetComponent<EnemyGameObject>();
         if (curr != null)
         {
-            cardDescription.text = card.actions.getModifiedDescription(curr.enemy.data, playerData, card.data);
+            card.data.targetedEnemy = curr;
         }
     }
 
     void OnTriggerExit2D(Collider2D other)
     {
         card.actions.onTriggerExit2D(other);
-        cardDescription.text = card.actions.getModifiedDescription(null, playerData, card.data);
     }
 
     public void onClick()

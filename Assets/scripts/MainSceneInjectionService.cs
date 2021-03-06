@@ -48,6 +48,8 @@ public class MainSceneInjectionService : MonoBehaviour
         GameObject enemyPrefab = Resources.Load(FilePathUtils.prefabPath + "enemyObject") as GameObject;
 
         //Data classes. no dependencies
+        GameData gameData = new GameData();
+        GameData.setInstance(gameData);
         PlayerData playerData = new PlayerData();
         DeckData deckData = new DeckData();
 
@@ -78,15 +80,22 @@ public class MainSceneInjectionService : MonoBehaviour
         CardTypes cardTypes = new CardTypes();
         cardTypes.initialize(statusTypes);
 
+        //GameObjects
+        PlayerGameObject playerGameObject = playerObject.GetComponent<PlayerGameObject>();
+        playerGameObject.initalize(playerObject, playerData);
+
+        FightSceneGameObject fightSceneGameObject = fightSceneObject.GetComponent<FightSceneGameObject>();
+        fightSceneGameObject.initalize(fightSceneObject, deckData, playerData);
+
         //Services
         UpgradeService upgradeService = new UpgradeService();
         EnemyTurnService enemyTurnService = new EnemyTurnService();
         StatusService statusService = new StatusService(statusTypes);
 
         EnemyService enemyService = new EnemyService(enemyTurnService, statusService);
-        CardGenerator cardGenerator = new CardGenerator(cardTypes);
+        CardGeneratorService cardGeneratorService = new CardGeneratorService(cardTypes);
 
-        PlayerService playerService = new PlayerService(playerData, sceneUiManager);
+        PlayerService playerService = new PlayerService(playerData, sceneUiManager, statusService, playerGameObject);
         DeckService deckService = new DeckService(deckData, cardUiManager, playerService);
         EnemyManagerService enemyManagerService = new EnemyManagerService(
             enemyPrefab,
@@ -98,7 +107,7 @@ public class MainSceneInjectionService : MonoBehaviour
             deckService,
             enemyTypes,
             cardUiManager,
-            cardGenerator,
+            cardGeneratorService,
             sceneUiManager,
             upgradeUiManager,
             upgradeService
@@ -106,13 +115,6 @@ public class MainSceneInjectionService : MonoBehaviour
         CardService cardService = new CardService(enemyManagerService, playerService, new AudioState(), deckService, enemyService);
         CardActionsService cardActionsService = new CardActionsService(deckService, playerService, cardService);
         EnemyManagerService.setInstance(enemyManagerService);
-
-        FightSceneGameObject fightSceneGameObject = fightSceneObject.GetComponent<FightSceneGameObject>();
-        fightSceneGameObject.initalize(fightSceneObject, deckData, playerData);
-
-
-        PlayerGameObject playerGameObject = playerObject.GetComponent<PlayerGameObject>();
-        playerGameObject.initalize(playerObject, playerData);
 
         UpgradeTypes upgradeTypes = new UpgradeTypes(playerService);
 
@@ -126,10 +128,16 @@ public class MainSceneInjectionService : MonoBehaviour
             upgradeService,
             enemyManagerService
         );
-        FightManagerService.setInstance(fightManagerService);
         cardUiManager.initialize(cardActionsService, playerData);
         upgradeUiManager.initialize(upgradeService);
         deckService.initialize(enemyManagerService);
+
+        //Initialize game data class
+        gameData.playerGameObject = playerGameObject;
+        gameData.deckData = deckData;
+        gameData.deckService = deckService;
+        gameData.playerService = playerService;
+        gameData.upgradeService = upgradeService;
 
 
         //init scene buttons + add click events

@@ -20,19 +20,17 @@ public class CardActionsService
         copyOverActions(cardGameObject, actions);
         Card card = cardGameObject.card;
         CardData data = card.data;
-        EnemyGameObject target = null;
         Transform transform = cardGameObject.transform;
         bool isDragging = false;
         bool isHovering = false;
         Vector3 startPosition = new Vector3(0, 0);
-        FightManagerService fightManagerService = FightManagerService.getInstance();
         GameObject backgroundImage = cardGameObject.transform.Find("cardBackground").gameObject;
 
         int yPositionForCardPlay = -250;
 
         actions.onDragStartAction = () =>
         {
-            target = null;
+            card.data.targetedEnemy = null;
             if (startPosition == null)
             {
                 startPosition = cardGameObject.transform.position;
@@ -47,10 +45,12 @@ public class CardActionsService
         actions.onDragEndAction = () =>
         {
             isDragging = false;
+            EnemyGameObject target = card.data.targetedEnemy;
             if (data.playerCardData.needsTarget && transform.position.y >= yPositionForCardPlay && target != null)
             {
-                cardService.onCardPlayed(card, target.enemy);
+                cardService.onCardPlayed(card);
                 target.onNotTargeted();
+                card.data.targetedEnemy = null;
                 GameObject.Destroy(cardGameObject.gameObject);
             }
             else if (!data.playerCardData.needsTarget && transform.position.y >= yPositionForCardPlay)
@@ -63,6 +63,7 @@ public class CardActionsService
                 if (target != null)
                 {
                     target.onNotTargeted();
+                    card.data.targetedEnemy = null;
                 }
                 backgroundImage.GetComponent<Image>().color = ColorUtils.none;
                 if (transform.position != startPosition)
@@ -78,6 +79,8 @@ public class CardActionsService
             {
                 return;
             }
+
+            EnemyGameObject target = card.data.targetedEnemy;
             if (transform.position.y >= yPositionForCardPlay && (!data.playerCardData.needsTarget || data.playerCardData.needsTarget && target != null))
             {
                 backgroundImage.GetComponent<Image>().color = ColorUtils.cardPlayedGreen;
@@ -104,18 +107,19 @@ public class CardActionsService
                 EnemyGameObject curr = other.transform.gameObject.GetComponent<EnemyGameObject>();
                 if (curr != null)
                 {
-                    target = curr;
+                    card.data.targetedEnemy = curr;
                     curr.onTargeted();
                 }
             }
         };
         actions.onTriggerExit2DAction = (Collider2D other) =>
         {
+            EnemyGameObject target = card.data.targetedEnemy;
             if (target != null)
             {
                 target.onNotTargeted();
             }
-            target = null;
+            card.data.targetedEnemy = null;
         };
         actions.onHoverEnter = () =>
         {
