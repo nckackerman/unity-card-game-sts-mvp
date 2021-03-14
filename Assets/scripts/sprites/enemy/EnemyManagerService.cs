@@ -91,7 +91,7 @@ public class EnemyManagerService
         foreach (EnemyGameObject enemyGameObject in gameData.currEnemies)
         {
             enemyGameObject.transform.SetParent(enemyContainer.transform, false);
-            enemyService.initializeEnemy(enemyGameObject.enemy);
+            enemyService.initializeEnemy(enemyGameObject);
         }
     }
 
@@ -100,11 +100,15 @@ public class EnemyManagerService
         foreach (EnemyGameObject enemyGameObject in gameData.currEnemies)
         {
             Enemy currEnemy = enemyGameObject.enemy;
-            Card enemyTurn = enemyTurnService.getModifiedEnemyTurn(currEnemy);
+            Card enemyTurn = enemyTurnService.getModifiedEnemyTurn(enemyGameObject);
 
             for (int i = 0; i < enemyTurn.data.attackMultiplier; i++)
             {
                 playerService.takeHit(enemyTurn.data.attack);
+                if (enemyTurn.data.attack > 0)
+                {
+                    enemyGameObject.attackAnimation();
+                }
             }
             currEnemy.data.healthBarData.currBlock = enemyTurn.data.defend;
 
@@ -115,7 +119,7 @@ public class EnemyManagerService
                     deckService.addCardToDeck(cardToAdd);
                 }
             }
-            statusService.onTurnOver(currEnemy.data.statuses, null, currEnemy.data);
+            statusService.onTurnOver(enemyGameObject.statusesObject);
             Card newEnemyTurn = enemyTurnService.updateEnemyTurn(currEnemy, turnCount);
         }
     }
@@ -139,14 +143,14 @@ public class EnemyManagerService
 
     public void onEnemyCardDrawn(Card card)
     {
-        enemyService.onEnemyCardDrawn(gameData.currEnemies[0].enemy, card);
+        enemyService.onEnemyCardDrawn(gameData.currEnemies[0], card);
     }
 
     public void damageAllEnemy(int damage, int attackMultiplier)
     {
         foreach (EnemyGameObject enemyGameObject in gameData.currEnemies)
         {
-            enemyService.takeHit(enemyGameObject.enemy, damage, attackMultiplier);
+            enemyService.takeHit(enemyGameObject, damage, attackMultiplier);
         }
     }
 
@@ -154,7 +158,7 @@ public class EnemyManagerService
     {
         foreach (EnemyGameObject enemyGameObject in gameData.currEnemies)
         {
-            enemyService.onCardPlayed(enemyGameObject.enemy, card);
+            enemyService.onCardPlayed(enemyGameObject, card);
         }
     }
 }

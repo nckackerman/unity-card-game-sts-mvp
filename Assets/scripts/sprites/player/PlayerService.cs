@@ -18,13 +18,13 @@ public class PlayerService
     public void initialize()
     {
         playerData.initialize();
+        playerGameObject.setPosition();
     }
 
     public void startFight()
     {
         playerGameObject.statusesObject.removeActiveStatuses();
 
-        playerData.statuses = new List<Status>();
         playerData.currEnergy = playerData.maxEnergy;
         playerData.healthBarData.currBlock = 0;
         playerData.currExtraDraw = 0;
@@ -80,7 +80,17 @@ public class PlayerService
         playerData.memories += card.data.playerCardData.memoryCount;
         if (card.data.playerCardData.statuses.Count > 0)
         {
-            statusService.addStatus(playerData.statuses, card.data.playerCardData.statuses);
+            statusService.addStatuses(playerGameObject.statusesObject, card.data.playerCardData.statuses, null);
+        }
+
+        if (card.data.attack > 0)
+        {
+            GameData.getInstance().playerGameObject.attackAnimation();
+        }
+
+        if (card.data.defend > 0)
+        {
+            GameData.getInstance().playerGameObject.blockAnimation();
         }
     }
 
@@ -109,6 +119,6 @@ public class PlayerService
             playerData.healthBarData.currBlock = Math.Max(0, playerData.healthBarData.currBlock - playerData.blockToLoseEachTurn);
         }
 
-        statusService.onTurnOver(playerData.statuses, playerData, null);
+        statusService.onTurnOver(playerGameObject.statusesObject);
     }
 }

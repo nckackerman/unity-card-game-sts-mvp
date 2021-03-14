@@ -34,7 +34,7 @@ public class CardService
         }
         else if (card.data.targetedEnemy != null)
         {
-            enemyService.onCardPlayed(card.data.targetedEnemy.enemy, card);
+            enemyService.onCardPlayed(card.data.targetedEnemy, card);
         }
         //Must call playerState.onCardPlayed before deckState.playCard
         playerService.onCardPlayed(card);

@@ -6,7 +6,6 @@ public class EnemyData
     public EnemyTurnData enemyTurnData = new EnemyTurnData();
     public double weakMultiplier = 0.75;
     public double vulnerableMultiplier = 1.5;
-    public List<Status> statuses = new List<Status>();
 
     public EnemyData(HealthBarData healthBarData, EnemyTurnData enemyTurnData)
     {

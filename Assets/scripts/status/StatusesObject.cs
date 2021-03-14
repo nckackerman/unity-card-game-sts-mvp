@@ -4,23 +4,32 @@ using UnityEngine;
 public class StatusesObject
 {
 
-    private List<StatusGameObject> activeStatuses = new List<StatusGameObject>();
+    public List<StatusGameObject> activeStatuses = new List<StatusGameObject>();
     private static GameObject statusPrefab = Resources.Load(FilePathUtils.prefabPath + "statusObject") as GameObject;
-    private GameObject statusesInstance;
+    private static GameObject appliedStatusPrefab = Resources.Load(FilePathUtils.prefabPath + "appliedStatusObject") as GameObject;
+    public GameObject parent;
+    public GameObject statusesInstance;
 
-    public StatusesObject(GameObject statusesInstance)
+    public StatusesObject(GameObject statusesInstance, GameObject parent)
     {
         this.statusesInstance = statusesInstance;
+        this.parent = parent;
     }
 
-    public void updateEnemyStatuses(Enemy enemy)
+    public List<StatusGameObject> getActiveStatusesCopy()
     {
-        updateStatuses(enemy.data.statuses, enemy.data, null);
+        return new List<StatusGameObject>(activeStatuses);
     }
 
-    public void updatePlayerStatuses(PlayerData playerData)
+    public StatusGameObject createNewStatus(Status status, EnemyData enemyData)
     {
-        updateStatuses(playerData.statuses, null, playerData);
+        GameObject statusInstance = GameObject.Instantiate(statusPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+        StatusGameObject statusGameObject = statusInstance.GetComponentInChildren<StatusGameObject>();
+        statusGameObject.initialize(statusInstance, status, enemyData);
+        statusInstance.transform.SetParent(statusesInstance.transform, false);
+        activeStatuses.Add(statusGameObject);
+
+        return statusGameObject;
     }
 
     public void removeActiveStatuses()
@@ -32,45 +41,24 @@ public class StatusesObject
         activeStatuses = new List<StatusGameObject>();
     }
 
-    private void updateStatuses(List<Status> statuses, EnemyData enemyData, PlayerData playerData)
+    public void showStatusOnParent(Status status)
     {
-        List<Status> toRemove = new List<Status>();
-        foreach (Status status in statuses)
-        {
-            StatusGameObject currStatusGameObject = null;
-            foreach (StatusGameObject activeStatusObject in activeStatuses)
-            {
-                Status activeStatus = activeStatusObject.status;
-                if (activeStatus.data.name == status.data.name)
-                {
-                    currStatusGameObject = activeStatusObject;
-                }
-            }
-            if (currStatusGameObject == null)
-            {
-                GameObject statusInstance = GameObject.Instantiate(statusPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-                StatusGameObject statusGameObject = statusInstance.GetComponentInChildren<StatusGameObject>();
-                statusGameObject.initialize(statusInstance, status, enemyData, playerData);
-                statusInstance.transform.SetParent(statusesInstance.transform, false);
+        GameObject appliedStatusInstance = GameObject.Instantiate(appliedStatusPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+        AppliedStatusGameObject appliedStatusGameObject = appliedStatusInstance.GetComponentInChildren<AppliedStatusGameObject>();
+        appliedStatusGameObject.initialize(appliedStatusInstance, status);
+        appliedStatusInstance.transform.SetParent(parent.transform);
 
-                activeStatuses.Add(statusGameObject);
-                currStatusGameObject = statusGameObject;
-            }
+        appliedStatusInstance.transform.localPosition = new Vector2(Random.Range(-40, 40), Random.Range(-40, 40));
+    }
 
-            if (status.data.statusCount <= 0)
-            {
-                activeStatuses.Remove(currStatusGameObject);
-                GameObject.Destroy(currStatusGameObject.statusInstance);
-                toRemove.Add(status);
-            }
-            else
-            {
-                currStatusGameObject.update();
-            }
-        }
-        foreach (Status statusToRemove in toRemove)
+    public void increment(StatusGameObject statusGameObject, int delta)
+    {
+        Status status = statusGameObject.status;
+        statusGameObject.increment(delta);
+
+        if (status.data.statusCount <= 0)
         {
-            statuses.Remove(statusToRemove);
+            activeStatuses.Remove(statusGameObject);
         }
     }
 }

@@ -24,8 +24,8 @@ public class DeckService
 
     public void initDeck(CardTypes cardTypes)
     {
-        deckData.deckCards.Add(cardTypes.getCardFromEnum(CardTypes.CardEnum.terrorize));
         deckData.deckCards.Add(cardTypes.getCardFromEnum(CardTypes.CardEnum.shield));
+        deckData.deckCards.Add(cardTypes.getCardFromEnum(CardTypes.CardEnum.threaten));
         for (int i = 0; i < 4; i++)
         {
             deckData.deckCards.Add(cardTypes.getCardFromEnum(CardTypes.CardEnum.smack));

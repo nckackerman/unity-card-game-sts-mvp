@@ -52,11 +52,6 @@ public class CardGameObject : MonoBehaviour, IScrollHandler, IBeginDragHandler, 
     void OnTriggerEnter2D(Collider2D other)
     {
         card.actions.onTriggerEnter2D(other);
-        EnemyGameObject curr = other.transform.gameObject.GetComponent<EnemyGameObject>();
-        if (curr != null)
-        {
-            card.data.targetedEnemy = curr;
-        }
     }
 
     void OnTriggerExit2D(Collider2D other)

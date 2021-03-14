@@ -28,8 +28,11 @@ public class CardActions
         }
         PlayerData playerData = GameData.getInstance().playerGameObject.playerData;
         int baseDamage = card.data.attack + card.data.temporaryDmgBoost;
-        double targetModifier = (enemyData != null && StatusUtils.getAppliedStatusCount(StatusTypes.StatusEnum.vulnerable, enemyData.statuses) > 0) ?
-            enemyData.vulnerableMultiplier : 1;
+        double targetModifier = (enemyData != null &&
+            StatusUtils.getAppliedStatusCount(
+                StatusTypes.StatusEnum.vulnerable,
+                card.data.targetedEnemy.statusesObject.activeStatuses
+            ) > 0) ? enemyData.vulnerableMultiplier : 1;
         int playerStrength = playerData != null ? playerData.strength : 0;
         int attackBonusDamage = playerData != null ? playerData.nextAttackBonusDamage : 0;
         return (int)((baseDamage + playerStrength + attackBonusDamage) * targetModifier);

@@ -20,12 +20,12 @@ public class EnemyTurnService
         return enemyTurnData.currEnemyTurn;
     }
 
-    public Card getModifiedEnemyTurn(Enemy enemy)
+    public Card getModifiedEnemyTurn(EnemyGameObject enemyGameObject)
     {
-        Card modifiedEnemyTurn = stackCardAffects(enemy.data.enemyTurnData.enemyModifiers);
-        if (StatusUtils.getAppliedStatusCount(StatusTypes.StatusEnum.weak, enemy.data.statuses) > 0)
+        Card modifiedEnemyTurn = stackCardAffects(enemyGameObject.enemy.data.enemyTurnData.enemyModifiers);
+        if (StatusUtils.getAppliedStatusCount(StatusTypes.StatusEnum.weak, enemyGameObject.statusesObject.activeStatuses) > 0)
         {
-            modifiedEnemyTurn.data.attack = (int)(modifiedEnemyTurn.data.attack * enemy.data.weakMultiplier);
+            modifiedEnemyTurn.data.attack = (int)(modifiedEnemyTurn.data.attack * enemyGameObject.enemy.data.weakMultiplier);
         }
 
         return modifiedEnemyTurn;

@@ -13,25 +13,26 @@ public class EnemyService
         this.statusService = statusService;
     }
 
-    public void initializeEnemy(Enemy enemy)
+    public void initializeEnemy(EnemyGameObject enemyGameObject)
     {
-        enemy.data.initialize();
-        enemyTurnService.updateEnemyTurn(enemy, 0);
+        enemyGameObject.setPosition();
+        enemyGameObject.enemy.data.initialize();
+        enemyTurnService.updateEnemyTurn(enemyGameObject.enemy, 0);
     }
 
-    public void onEnemyCardDrawn(Enemy enemy, Card card)
+    public void onEnemyCardDrawn(EnemyGameObject enemyGameObject, Card card)
     {
-        enemy.data.enemyTurnData.enemyModifiers.Add(card);
-        enemy.data.enemyTurnData.currEnemyTurn = enemyTurnService.getModifiedEnemyTurn(enemy);
+        enemyGameObject.enemy.data.enemyTurnData.enemyModifiers.Add(card);
+        enemyGameObject.enemy.data.enemyTurnData.currEnemyTurn = enemyTurnService.getModifiedEnemyTurn(enemyGameObject);
     }
 
-    public void onCardPlayed(Enemy enemy, Card card)
+    public void onCardPlayed(EnemyGameObject enemyGameObject, Card card)
     {
-        takeHit(enemy, card.data.attack, card.data.attackMultiplier);
-        statusService.addStatus(enemy.data.statuses, card.data.statuses);
+        takeHit(enemyGameObject, card.data.attack, card.data.attackMultiplier);
+        statusService.addStatuses(enemyGameObject.statusesObject, card.data.statuses, enemyGameObject.enemy.data);
     }
 
-    public void takeHit(Enemy enemy, int damage, int attackMultiplier)
+    public void takeHit(EnemyGameObject enemyGameObject, int damage, int attackMultiplier)
     {
         if (damage <= 0)
         {
@@ -40,18 +41,18 @@ public class EnemyService
         for (int i = 0; i < attackMultiplier; i++)
         {
             int modifiedDamage = damage + GameData.getInstance().playerGameObject.playerData.nextAttackBonusDamage;
-            if (enemy.data.statuses.Where(status => status.data.name == "Vulnerable").Count() > 0)
+            if (StatusUtils.getAppliedStatusCount(StatusTypes.StatusEnum.vulnerable, enemyGameObject.statusesObject.activeStatuses) > 0)
             {
-                modifiedDamage = (int)(modifiedDamage * enemy.data.vulnerableMultiplier);
+                modifiedDamage = (int)(modifiedDamage * enemyGameObject.enemy.data.vulnerableMultiplier);
             }
-            if (enemy.data.healthBarData.currBlock >= modifiedDamage)
+            if (enemyGameObject.enemy.data.healthBarData.currBlock >= modifiedDamage)
             {
-                enemy.data.healthBarData.currBlock -= modifiedDamage;
+                enemyGameObject.enemy.data.healthBarData.currBlock -= modifiedDamage;
             }
             else
             {
-                enemy.data.healthBarData.currHealth -= modifiedDamage - enemy.data.healthBarData.currBlock;
-                enemy.data.healthBarData.currBlock = 0;
+                enemyGameObject.enemy.data.healthBarData.currHealth -= modifiedDamage - enemyGameObject.enemy.data.healthBarData.currBlock;
+                enemyGameObject.enemy.data.healthBarData.currBlock = 0;
             }
         }
     }

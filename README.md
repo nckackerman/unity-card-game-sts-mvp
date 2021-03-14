@@ -8,6 +8,15 @@ This is a for-fun project to build a POC/MVP for a deckbuilder game in [Unity-2d
 Absolutely! Please reach out to nckackerman@gmail.com for any question about this code. Happy to help however I can :)
 
 ## Updates
+### 3/12/2021
+- Added POC for basic fight animation
+
+Whats next
+- Create the "non combat" screen
+- Expand on the "POC" for fight animations
+- More cards/upgrades/enemies
+
+## Updates
 ### 3/5/2021
 - Added a handful of new cards and relics
 - Moved code towards a global state object, something I tried to stay away from initially. Global state seems appropriate here since:

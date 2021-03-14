@@ -15,7 +15,6 @@ public class PlayerData
     public double weakMultiplier = 0.75;
     public int blockToLoseEachTurn = -1;
     public int nextAttackBonusDamage = 0;
-    public List<Status> statuses = new List<Status>();
 
     public void initialize()
     {

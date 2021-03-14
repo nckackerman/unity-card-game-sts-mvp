@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 public class StatusService
 {
@@ -10,43 +11,39 @@ public class StatusService
         this.statusTypes = statusTypes;
     }
 
-    public void addStatus(List<Status> existingStatusus, List<Status> newStatuses)
+    public void addStatuses(StatusesObject statusesObject, List<Status> newStatuses, EnemyData enemyData)
     {
         bool statusAlreadyApplied = false;
         foreach (Status newStatus in newStatuses)
         {
-            foreach (Status existingStatus in existingStatusus)
+            //Need a copy activeStatuses to prevent concurrent modifcation exceptions
+            foreach (StatusGameObject activeStatuse in statusesObject.getActiveStatusesCopy())
             {
-                if (newStatus.data.name == existingStatus.data.name)
+                if (newStatus.data.name == activeStatuse.status.data.name)
                 {
                     statusAlreadyApplied = true;
-                    existingStatus.data.statusCount += newStatus.data.statusCount;
+                    statusesObject.increment(activeStatuse, newStatus.data.statusCount);
+                    statusesObject.showStatusOnParent(activeStatuse.status);
                 }
             }
             if (!statusAlreadyApplied)
             {
                 Status newStatusCopy = statusTypes.getStatusFromEnum(newStatus.statusEnum);
                 newStatusCopy.data = newStatus.data.shallowCopy();
-                existingStatusus.Add(newStatusCopy);
+                StatusGameObject createdStatus = statusesObject.createNewStatus(newStatusCopy, enemyData);
+                statusesObject.showStatusOnParent(createdStatus.status);
             }
         }
     }
 
 
-    public void onTurnOver(List<Status> statuses, PlayerData playerData, EnemyData enemyData)
+    public void onTurnOver(StatusesObject statusesObject)
     {
-        foreach (Status status in statuses)
+        //Need a copy activeStatuses to prevent concurrent modifcation exceptions
+        foreach (StatusGameObject statusGameObject in statusesObject.getActiveStatusesCopy())
         {
-            status.data.statusCount += status.data.statusDeltaPerTurn;
-            status.actions.onTurnOver(status.data);
-        }
-    }
-
-    public void onFightOver(List<Status> statuses, PlayerData playerData)
-    {
-        foreach (Status status in statuses)
-        {
-            status.data.statusCount += status.data.statusDeltaPerTurn;
+            statusesObject.increment(statusGameObject, statusGameObject.status.data.statusDeltaPerTurn);
+            statusGameObject.status.actions.onTurnOver(statusGameObject.status.data);
         }
     }
 }
