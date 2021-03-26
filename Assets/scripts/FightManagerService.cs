@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using UnityEngine;
 public class FightManagerService
 {
     private SceneUiManager sceneUiManager;
@@ -8,6 +9,7 @@ public class FightManagerService
     private UpgradeService upgradeService;
     private DeckService deckService;
     private DeckData deckData;
+    private CampService campService;
     private EnemyManagerService enemyManagerService;
 
     public FightManagerService(
@@ -17,6 +19,7 @@ public class FightManagerService
         UpgradeUiManager upgradeUiManager,
         DeckService deckService,
         DeckData deckData,
+        CampService campService,
         UpgradeService upgradeService,
         EnemyManagerService enemyManagerService)
     {
@@ -25,13 +28,13 @@ public class FightManagerService
         this.playerService = playerService;
         this.deckService = deckService;
         this.deckData = deckData;
+        this.campService = campService;
         this.upgradeService = upgradeService;
         this.enemyManagerService = enemyManagerService;
     }
 
     public void startNewRun(UpgradeTypes upgradeTypes, CardTypes cardTypes)
     {
-        GameData.getInstance().fightData.fightCount = 0;
         deckService.initDeck(cardTypes);
         playerService.initialize();
         upgradeService.initUpgrades(upgradeTypes);
@@ -39,18 +42,43 @@ public class FightManagerService
         startFight();
     }
 
+    public void confirmCampEvents()
+    {
+        List<CardGameObject> selectedCampCards = GameData.getInstance().selectedCampCards;
+        int requiredCampSelection = GameData.getInstance().deckData.campDeckData.maxCampCards;
+        if (selectedCampCards.Count != requiredCampSelection)
+        {
+            Debug.Log("camp count needs to be " + requiredCampSelection + ", it is: " + selectedCampCards.Count);
+            return;
+        }
+        campService.discardCampCards();
+        startFight();
+    }
+
     public void startFight()
     {
-        GameData.getInstance().fightData.fightCount++;
-        GameData.getInstance().fightData.turnCount = 0;
-        playerService.startFight();
-        deckService.startFight();
+        if (GameData.getInstance().selectedCampCards.Count == 0)
+        {
+            sceneUiManager.showCampScene();
+            campService.enterCamp();
+            GameData.getInstance().selectedCampCards = new List<CardGameObject>();
+        }
+        else
+        {
+            List<CardGameObject> campCards = GameData.getInstance().selectedCampCards;
+            Fight fight = enemyManagerService.getFight(campCards[0].card.data.campEventType);
+            GameData.getInstance().fightData.currentFight = fight;
+            enemyManagerService.initializeEnemiesForFight(fight);
 
-        enemyManagerService.initializeEnemiesForFight(GameData.getInstance().fightData.fightCount);
+            GameData.getInstance().fightData.fightCount++;
+            GameData.getInstance().fightData.turnCount = 0;
+            playerService.startFight();
+            deckService.startFight();
 
-        upgradeService.triggerCombatStartActions();
+            upgradeService.triggerCombatStartActions();
 
-        sceneUiManager.startFight();
+            sceneUiManager.startFight();
+        }
     }
 
     public void endTurn()

@@ -8,6 +8,15 @@ This is a for-fun project to build a POC/MVP for a deckbuilder game in [Unity-2d
 Absolutely! Please reach out to nckackerman@gmail.com for any question about this code. Happy to help however I can :)
 
 ## Updates
+### 3/25/2021
+- create the basics for a "camp screen" where player can spend earned resources and plan out the next few encounters before returning to camp and continue the loop.
+- This feels like a good milestone for the project. Most large pieces are in place and the loop/skeleton for the game is in tact.
+
+Whats next:
+- Target creating a fun/interesting loop thats unpolished. This should mostly be done by building out more cards/upgrades/enemies
+- expand on the in game currencies (gold/memories)
+- Quality of Life improvements + polish
+
 ### 3/12/2021
 - Added POC for basic fight animation
 

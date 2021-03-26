@@ -44,9 +44,6 @@ public class EnemyGameObject : MonoBehaviour
         this.endAttackPos = transform.position;
         this.startAttackPos = endAttackPos - new Vector2(100, 0);
 
-        Debug.Log("enemy endAttackPos: " + endAttackPos);
-        Debug.Log("enemy startAttackPos: " + startAttackPos);
-
         Action callback = () =>
         {
             transform.position = endAttackPos;

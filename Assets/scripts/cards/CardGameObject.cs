@@ -1,5 +1,4 @@
 using UnityEngine;
-using System;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
@@ -13,13 +12,11 @@ public class CardGameObject : MonoBehaviour, IScrollHandler, IBeginDragHandler, 
     private TextMeshProUGUI cardName;
     private TextMeshProUGUI cardMemory;
     private GameObject backgroundImage;
-    private PlayerData playerData;
     private bool initialized = false;
 
-    public void initialize(GameObject cardInstance, Card card, PlayerData playerData)
+    public void initialize(GameObject cardInstance, Card card)
     {
         this.card = card;
-        this.playerData = playerData;
         cardEnergyCount = cardInstance.transform.Find("cardEnergyUi").gameObject.GetComponentInChildren<TextMeshProUGUI>();
         cardDescription = cardInstance.transform.Find("cardDescriptionUi").gameObject.GetComponentInChildren<TextMeshProUGUI>();
         cardName = cardInstance.transform.Find("cardNameUi").gameObject.GetComponentInChildren<TextMeshProUGUI>();

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class CardUiManager
 {
@@ -26,10 +27,9 @@ public class CardUiManager
         this.cardSelect = cardSelect;
     }
 
-    public void initialize(CardActionsService cardActionsService, PlayerData playerData)
+    public void initialize(CardActionsService cardActionsService)
     {
         this.cardActionsService = cardActionsService;
-        this.playerData = playerData;
     }
 
     public void showCardInHand(Card card, int handSize)
@@ -96,7 +96,7 @@ public class CardUiManager
     {
         GameObject cardInstance = GameObject.Instantiate(cardPrefab, new Vector3(0, 0, 0), Quaternion.identity);
         CardGameObject cardGameObject = cardInstance.GetComponent<CardGameObject>();
-        cardGameObject.initialize(cardInstance, card, playerData);
+        cardGameObject.initialize(cardInstance, card);
         return cardGameObject;
     }
 

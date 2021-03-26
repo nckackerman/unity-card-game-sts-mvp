@@ -148,7 +148,6 @@ public class CardActionsService
         return actions;
     }
 
-
     public CardActions getSelectableCardActions(CardGameObject cardGameObject, CardUiManager cardUiManager)
     {
         CardActions actions = new CardActions();

@@ -33,6 +33,12 @@ public class DeckService
         }
         deckData.discardCards = new List<Card>();
         deckData.hand = new List<Card>();
+
+        for (int i = 0; i < 2; i++)
+        {
+            deckData.campDeckData.campDeckCards.Add(cardTypes.getCardFromEnum(CardTypes.CardEnum.enemy_basic));
+            deckData.campDeckData.campDeckCards.Add(cardTypes.getCardFromEnum(CardTypes.CardEnum.enemy_elite));
+        }
     }
 
     //Shouldnt be called directly (normally). This should only be called from cardService.onCardPlayed();
@@ -103,7 +109,7 @@ public class DeckService
         {
             return null;
         }
-        Card drawnCard = randomCardFromDeck();
+        Card drawnCard = randomCardFromDeck(deckData.deckCards, deckData.discardCards);
         if (drawnCard != null)
         {
             drawnCard.actions.onCardDrawn();
@@ -118,29 +124,34 @@ public class DeckService
 
     public void shuffleDiscardIntoDeck()
     {
-        while (deckData.discardCards.Count > 0)
+        shuffleDiscardIntoDeck(deckData.deckCards, deckData.discardCards);
+    }
+
+    public void shuffleDiscardIntoDeck(List<Card> deck, List<Card> discard)
+    {
+        while (discard.Count > 0)
         {
-            int index = Random.Range(0, deckData.discardCards.Count);
-            Card card = deckData.discardCards[index];
-            deckData.discardCards.RemoveAt(index);
-            deckData.deckCards.Add(card);
+            int index = Random.Range(0, discard.Count);
+            Card card = discard[index];
+            discard.RemoveAt(index);
+            deck.Add(card);
         }
     }
-    public Card randomCardFromDeck()
+    public Card randomCardFromDeck(List<Card> deck, List<Card> discard)
     {
-        if (deckData.deckCards.Count == 0)
+        if (deck.Count == 0)
         {
-            shuffleDiscardIntoDeck();
+            shuffleDiscardIntoDeck(deck, discard);
         }
-        if (deckData.deckCards.Count == 0)
+        if (deck.Count == 0)
         {
             //no cards to draw
             return null;
         }
 
-        int index = Random.Range(0, deckData.deckCards.Count);
-        Card card = deckData.deckCards[index];
-        deckData.deckCards.RemoveAt(index);
+        int index = Random.Range(0, deck.Count);
+        Card card = deck[index];
+        deck.RemoveAt(index);
         return card;
     }
 

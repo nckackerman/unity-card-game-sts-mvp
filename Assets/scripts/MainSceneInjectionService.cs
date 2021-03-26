@@ -12,10 +12,14 @@ using TMPro;
 
 public class MainSceneInjectionService : MonoBehaviour
 {
+    private GameObject wellGameObject;
+    private GameObject boardGameObject;
+    private GameObject shopGameObject;
     private GameObject playerObject;
 
     private GameObject enemyContainer;
     private GameObject playerHandObject;
+    private GameObject campHandObject;
     private Button startNewRunButton;
     private GameObject showDiscardObject;
     private GameObject showTrashObject;
@@ -23,6 +27,8 @@ public class MainSceneInjectionService : MonoBehaviour
     private Button runItBackButton;
     private GameObject endTurnObject;
     private Button closeCardListButton;
+    private Button closeCampListButton;
+    private Button leaveCampButton;
     private GameObject showDeckObject;
     private GameObject extraDrawObject;
 
@@ -34,7 +40,11 @@ public class MainSceneInjectionService : MonoBehaviour
     private GameObject victoryScene;
     private GameObject gameOverScene;
     private GameObject startScene;
+    private GameObject campScene;
+    private GameObject selectedCampCards;
+    private GameObject campSelectionScene;
     private GameObject upgradeList;
+    private TextMeshProUGUI campContractText;
 
     void Start()
     {
@@ -66,12 +76,19 @@ public class MainSceneInjectionService : MonoBehaviour
             gameOverScene,
             victoryScene,
             cardListScene,
-            fightSceneObject
+            fightSceneObject,
+            campScene
         );
         UpgradeUiManager upgradeUiManager = new UpgradeUiManager(
             upgradeSelect,
             upgradePrefab,
             upgradeList
+        );
+        CampCardUiManager campCardUiManager = new CampCardUiManager(
+            cardPrefab,
+            campHandObject,
+            selectedCampCards,
+            campContractText
         );
 
         //Types
@@ -83,7 +100,6 @@ public class MainSceneInjectionService : MonoBehaviour
         //GameObjects
         PlayerGameObject playerGameObject = playerObject.GetComponent<PlayerGameObject>();
         playerGameObject.initalize(playerObject, playerData);
-
         FightSceneGameObject fightSceneGameObject = fightSceneObject.GetComponent<FightSceneGameObject>();
         fightSceneGameObject.initalize(fightSceneObject, deckData, playerData);
 
@@ -97,6 +113,7 @@ public class MainSceneInjectionService : MonoBehaviour
 
         PlayerService playerService = new PlayerService(playerData, sceneUiManager, statusService, playerGameObject);
         DeckService deckService = new DeckService(deckData, cardUiManager, playerService);
+        CampDeckService campDeckService = new CampDeckService(campCardUiManager, deckService);
         EnemyManagerService enemyManagerService = new EnemyManagerService(
             enemyPrefab,
             enemyContainer,
@@ -113,7 +130,9 @@ public class MainSceneInjectionService : MonoBehaviour
             upgradeService
         );
         CardService cardService = new CardService(enemyManagerService, playerService, new AudioState(), deckService, enemyService);
+        CampService campService = new CampService(campScene, campSelectionScene, campDeckService);
         CardActionsService cardActionsService = new CardActionsService(deckService, playerService, cardService);
+        CampCardActionsService campCardActionsService = new CampCardActionsService(campDeckService);
         EnemyManagerService.setInstance(enemyManagerService);
 
         UpgradeTypes upgradeTypes = new UpgradeTypes(playerService);
@@ -125,10 +144,12 @@ public class MainSceneInjectionService : MonoBehaviour
             upgradeUiManager,
             deckService,
             deckData,
+            campService,
             upgradeService,
             enemyManagerService
         );
-        cardUiManager.initialize(cardActionsService, playerData);
+        cardUiManager.initialize(cardActionsService);
+        campCardUiManager.initialize(campCardActionsService);
         upgradeUiManager.initialize(upgradeService);
         deckService.initialize(enemyManagerService);
 
@@ -138,6 +159,7 @@ public class MainSceneInjectionService : MonoBehaviour
         gameData.deckService = deckService;
         gameData.playerService = playerService;
         gameData.upgradeService = upgradeService;
+        gameData.enemyTypes = enemyTypes;
 
 
         //init scene buttons + add click events
@@ -145,22 +167,39 @@ public class MainSceneInjectionService : MonoBehaviour
         runItBackButton.onClick.AddListener(() => fightManagerService.startNewRun(upgradeTypes, cardTypes));
         nextFightButton.onClick.AddListener(fightManagerService.startFight);
         closeCardListButton.onClick.AddListener(cardUiManager.hideCardPile);
+        closeCampListButton.onClick.AddListener(() => campService.hideCampFightList());
+        leaveCampButton.onClick.AddListener(() => fightManagerService.confirmCampEvents());
 
         addEventTrigger(showDeckObject).callback.AddListener((data) => cardUiManager.showCardPile(deckData.deckCards));
         addEventTrigger(showDiscardObject).callback.AddListener((data) => cardUiManager.showCardPile(deckData.discardCards));
         addEventTrigger(showTrashObject).callback.AddListener((data) => cardUiManager.showCardPile(deckData.trash));
         addEventTrigger(endTurnObject).callback.AddListener((data) => fightManagerService.endTurn());
         addEventTrigger(extraDrawObject).callback.AddListener((data) => deckService.extraDraw());
+
+        addEventTrigger(wellGameObject).callback.AddListener((data) => campService.showCampFightList());
+        addEventTrigger(shopGameObject).callback.AddListener((data) => campService.showCampFightList());
+
+        //hide well/shop buttons
+        wellGameObject.SetActive(false);
+        shopGameObject.SetActive(false);
     }
 
     private void takeObjectsFromScene()
     {
+        wellGameObject = GameObject.Find("wellObject");
+        boardGameObject = GameObject.Find("boardObject");
+        shopGameObject = GameObject.Find("shopObject");
         playerHandObject = GameObject.Find("playerHand");
+        campHandObject = GameObject.Find("campHand");
+        campContractText = GameObject.Find("campContractText").GetComponent<TextMeshProUGUI>();
+        selectedCampCards = GameObject.Find("selectedCampCardsObject");
         upgradeList = GameObject.Find("UpgradeList");
         startNewRunButton = GameObject.Find("StartNewRunButton").GetComponent<Button>();
         nextFightButton = GameObject.Find("NextFightButton").GetComponent<Button>();
         runItBackButton = GameObject.Find("RunItBackButton").GetComponent<Button>();
         closeCardListButton = GameObject.Find("CloseCardListButton").GetComponent<Button>();
+        closeCampListButton = GameObject.Find("closeCampListButton").GetComponent<Button>();
+        leaveCampButton = GameObject.Find("leaveCampButton").GetComponent<Button>();
         showDeckObject = GameObject.Find("showDeckClickable");
         endTurnObject = GameObject.Find("EndTurnObject");
         showDiscardObject = GameObject.Find("discardClickable");
@@ -173,6 +212,9 @@ public class MainSceneInjectionService : MonoBehaviour
 
         //views
         fightSceneObject = GameObject.Find("fightScene");
+        campScene = GameObject.Find("campScene");
+        campSelectionScene = GameObject.Find("campSelectionScene");
+        campScene.SetActive(false);
         startScene = GameObject.Find("startScene");
         startScene.SetActive(true);
         gameOverScene = GameObject.Find("gameOverScene");

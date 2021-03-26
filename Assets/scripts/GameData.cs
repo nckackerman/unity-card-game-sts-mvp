@@ -22,6 +22,10 @@ public class GameData
     public PlayerService playerService;
     public UpgradeService upgradeService;
     public Card selectedCard;
+    public EnemyTypes enemyTypes;
+    public CampContract currContract;
+    public List<CampContract> availableContracts = new List<CampContract>();
+    public List<CardGameObject> selectedCampCards = new List<CardGameObject>();
 
     public static void setInstance(GameData gameData)
     {

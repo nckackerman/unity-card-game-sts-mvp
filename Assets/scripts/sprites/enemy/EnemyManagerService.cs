@@ -68,24 +68,41 @@ public class EnemyManagerService
         enemyManagerService = instance;
     }
 
-    public void initializeEnemiesForFight(int fightCount)
+    public Fight getFight(CampEventType campEventType)
+    {
+        List<Enemy> enemies = new List<Enemy>();
+        Fight fight = new Fight();
+        if (campEventType == CampEventType.basic)
+        {
+            fight.cardOnComplete = true;
+            enemies.Add(enemyTypes.getFirstEnemy());
+        }
+        else if (campEventType == CampEventType.elite)
+        {
+            fight.upgradeOnComplete = true;
+            enemies.Add(enemyTypes.getBoss());
+        }
+        else
+        {
+            throw new System.Exception("invalid status enum provided: " + campEventType);
+        }
+        fight.enemies = enemies;
+        return fight;
+    }
+
+    public void initializeEnemiesForFight(Fight fight)
     {
         foreach (Transform child in enemyContainer.transform)
         {
             GameObject.Destroy(child.gameObject);
         }
 
-        if (fightCount == 1)
+        foreach (Enemy enemy in fight.enemies)
         {
-            gameData.currEnemies.Add(enemyTypes.getFirstEnemy());
-        }
-        else if (fightCount == 2)
-        {
-            gameData.currEnemies.Add(enemyTypes.getSecondEnemy());
-        }
-        else
-        {
-            gameData.currEnemies.Add(enemyTypes.getBoss());
+            GameObject enemyInstance = GameObject.Instantiate(enemyObjectPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+            EnemyGameObject newEnemyGameObject = enemyInstance.GetComponent<EnemyGameObject>();
+            newEnemyGameObject.initalize(enemyInstance, enemy);
+            gameData.currEnemies.Add(newEnemyGameObject);
         }
 
         foreach (EnemyGameObject enemyGameObject in gameData.currEnemies)
@@ -129,6 +146,7 @@ public class EnemyManagerService
         gameData.currEnemies.Remove(enemy);
         if (gameData.currEnemies.Count == 0)
         {
+            Fight currentFight = GameData.getInstance().fightData.currentFight;
             deckService.discardHand();
             deckService.shuffleDiscardIntoDeck();
             deckService.onFightEnd();
@@ -136,8 +154,25 @@ public class EnemyManagerService
             upgradeService.triggerCombatEndActions();
 
             sceneUiManager.showVictoryScene();
-            cardUiManager.showCardSelectUi(cardGeneratorService.generateCards(3));
-            upgradeUiManager.showUpgradeSelectUi(upgradeService.genRandomUpgrades(2));
+            if (currentFight.cardOnComplete)
+            {
+                cardUiManager.showCardSelectUi(cardGeneratorService.generateCards(3));
+            }
+            else
+            {
+                cardUiManager.destroyCardSelect();
+            }
+            if (currentFight.upgradeOnComplete)
+            {
+                upgradeUiManager.showUpgradeSelectUi(upgradeService.genRandomUpgrades(2));
+            }
+            else
+            {
+                upgradeUiManager.destroyUpgradeSelectUi();
+            }
+
+            List<CardGameObject> cards = GameData.getInstance().selectedCampCards;
+            cards.Remove(cards[0]);
         }
     }
 

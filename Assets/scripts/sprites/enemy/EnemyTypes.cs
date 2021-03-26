@@ -10,11 +10,8 @@ public class EnemyTypes
         this.enemyObjectPrefab = enemyObjectPrefab;
     }
 
-    public EnemyGameObject getFirstEnemy()
+    public Enemy getFirstEnemy()
     {
-        GameObject enemyInstance = GameObject.Instantiate(enemyObjectPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-        EnemyGameObject enemyGameObject = enemyInstance.GetComponent<EnemyGameObject>();
-
         EnemyTurnData enemyTurnData = new EnemyTurnData();
         enemyTurnData.baseEnemyTurns.Add(new Card(new CardData(11, 0), new CardActions()));
         enemyTurnData.baseEnemyTurns.Add(new Card(new CardData(0, 10), new CardActions()));
@@ -26,17 +23,13 @@ public class EnemyTypes
         };
 
         //basicEnemy.animatorController = Resources.Load<RuntimeAnimatorController>(spritePath + "MaskManController");
-        EnemyData data = new EnemyData(new HealthBarData(40), enemyTurnData);
+        EnemyData data = new EnemyData(new HealthBarData(45), enemyTurnData);
         Enemy enemy = new Enemy(data, enemyActions);
-        enemyGameObject.initalize(enemyInstance, enemy);
-        return enemyGameObject;
+        return enemy;
     }
 
-    public EnemyGameObject getSecondEnemy()
+    public Enemy getSecondEnemy()
     {
-        GameObject enemyInstance = GameObject.Instantiate(enemyObjectPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-        EnemyGameObject enemyGameObject = enemyInstance.GetComponent<EnemyGameObject>();
-
         EnemyTurnData enemyTurnData = new EnemyTurnData();
         CardData attackCardData = new CardData();
         CardActions attackCardActions = new CardActions();
@@ -56,24 +49,20 @@ public class EnemyTypes
 
         //basicEnemy.animatorController = Resources.Load<RuntimeAnimatorController>(spritePath + "MaskManController");
 
-        EnemyData data = new EnemyData(new HealthBarData(60), enemyTurnData);
+        EnemyData data = new EnemyData(new HealthBarData(55), enemyTurnData);
         Enemy enemy = new Enemy(data, enemyActions);
-        enemyGameObject.initalize(enemyInstance, enemy);
-        return enemyGameObject;
+        return enemy;
     }
 
-    public EnemyGameObject getThirdEnemy()
+    public Enemy getThirdEnemy()
     {
         //TODO: add a card the inhibits player attacking
         //TODO: add a card that dmgs the enemy for each additional turn this fight
         return null;
     }
 
-    public EnemyGameObject getBoss()
+    public Enemy getBoss()
     {
-        GameObject enemyInstance = GameObject.Instantiate(enemyObjectPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-        EnemyGameObject enemyGameObject = enemyInstance.GetComponent<EnemyGameObject>();
-
         EnemyTurnData enemyTurnData = new EnemyTurnData();
         Card increaseStrengthCard = new Card(new CardData(), new CardActions());
 
@@ -85,7 +74,7 @@ public class EnemyTypes
         // increaseStrengthCard.data.description = "Increase enemy strength by " + increaseStrengthData.statusCount;
         // enemyTurnData.baseEnemyTurns.Add(addCardToDeckTurn(increaseStrengthCard));
 
-        EnemyData data = new EnemyData(new HealthBarData(99), enemyTurnData);
+        EnemyData data = new EnemyData(new HealthBarData(85), enemyTurnData);
         for (int i = 1; i < 4; i++)
         {
             CardData cardData = new CardData(3, 0);
@@ -97,8 +86,7 @@ public class EnemyTypes
         // bossEnemy.animatorController = Resources.Load<RuntimeAnimatorController>(spritePath + "MaskManController");
 
         Enemy enemy = new Enemy(data, enemyActions);
-        enemyGameObject.initalize(enemyInstance, enemy);
-        return enemyGameObject;
+        return enemy;
     }
 
     private Card addCardToDeckTurn(Card card)
