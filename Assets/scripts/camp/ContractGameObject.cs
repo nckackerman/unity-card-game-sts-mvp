@@ -19,7 +19,6 @@ public class ContractGameObject : MonoBehaviour, IPointerClickHandler
     }
     public void OnPointerClick(PointerEventData pointerEventData)
     {
-        Debug.Log("yup");
         GameData.getInstance().currContract = campContract;
     }
 }

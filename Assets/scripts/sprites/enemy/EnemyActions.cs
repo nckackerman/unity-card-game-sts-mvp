@@ -4,6 +4,7 @@ public class EnemyActions
 {
     public Action onTurnOverAction;
     public Action onShuffleAction;
+    public Action onDeathAction;
 
     public void onTurnOver()
     {
@@ -18,6 +19,14 @@ public class EnemyActions
         if (onShuffleAction != null)
         {
             onShuffleAction();
+        }
+    }
+
+    public void onDeath()
+    {
+        if (onDeathAction != null)
+        {
+            onDeathAction();
         }
     }
 }

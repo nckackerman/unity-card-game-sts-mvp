@@ -40,11 +40,6 @@ public class CampDeckService
     public void addCampCardToQueue(CardGameObject cardGameObject)
     {
         List<CardGameObject> selectedCampCards = GameData.getInstance().selectedCampCards;
-        if (selectedCampCards.Count >= 3)
-        {
-            Debug.Log("doing nothing as too many camps cards were selected");
-            return;
-        }
         selectedCampCards.Add(cardGameObject);
         campCardUiManager.selectCampCard(cardGameObject);
     }

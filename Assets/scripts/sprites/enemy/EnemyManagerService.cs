@@ -1,6 +1,7 @@
 using System.Collections.Generic;
-using System;
 using UnityEngine;
+using System.Threading.Tasks;
+using System;
 using System.Linq;
 public class EnemyManagerService
 {
@@ -17,6 +18,13 @@ public class EnemyManagerService
     private SceneUiManager sceneUiManager;
     private UpgradeService upgradeService;
     private UpgradeUiManager upgradeUiManager;
+
+    private List<Fight> easyFights = new List<Fight>();
+    private List<Fight> basicFights = new List<Fight>();
+    private List<Fight> eliteFights = new List<Fight>();
+    private int basicFightCounter = 0;
+    private int eliteFightCounter = 0;
+
 
     private GameData gameData = GameData.getInstance();
     private CardGeneratorService cardGeneratorService;
@@ -68,25 +76,65 @@ public class EnemyManagerService
         enemyManagerService = instance;
     }
 
-    public Fight getFight(CampEventType campEventType)
+    public void initializeFights()
+    {
+        Fight eliteFight1 = getFight();
+        eliteFight1.enemies.Add(enemyTypes.getBoss());
+        eliteFights.Add(eliteFight1);
+
+        Fight easyFight1 = getFight();
+        easyFight1.enemies.Add(enemyTypes.getFirstEnemy());
+        easyFights.Add(easyFight1);
+
+        Fight easyFight2 = getFight();
+        easyFight2.enemies.Add(enemyTypes.getSecondEnemy());
+        easyFights.Add(easyFight2);
+
+        Fight easyFight3 = getFight();
+        easyFight3.enemies.Add(enemyTypes.getThirdEnemy());
+        easyFight3.enemies.Add(enemyTypes.getThirdEnemy());
+        easyFights.Add(easyFight3);
+
+        //Shuffle the easy Fights
+        System.Random rng = new System.Random();
+        easyFights = easyFights.OrderBy(a => rng.Next()).ToList();
+    }
+
+    public Fight getFight()
     {
         List<Enemy> enemies = new List<Enemy>();
         Fight fight = new Fight();
+        fight.enemies = enemies;
+        return fight;
+    }
+
+    public Fight getFight(CampEventType campEventType)
+    {
+        Fight fight = new Fight();
         if (campEventType == CampEventType.basic)
         {
+            fight = easyFights[basicFightCounter];
             fight.cardOnComplete = true;
-            enemies.Add(enemyTypes.getFirstEnemy());
+            basicFightCounter++;
+            if (basicFightCounter > easyFights.Count - 1)
+            {
+                basicFightCounter = 0;
+            }
         }
         else if (campEventType == CampEventType.elite)
         {
+            fight = eliteFights[eliteFightCounter];
             fight.upgradeOnComplete = true;
-            enemies.Add(enemyTypes.getBoss());
+            eliteFightCounter++;
+            if (eliteFightCounter > eliteFights.Count - 1)
+            {
+                eliteFightCounter = 0;
+            }
         }
         else
         {
             throw new System.Exception("invalid status enum provided: " + campEventType);
         }
-        fight.enemies = enemies;
         return fight;
     }
 
@@ -112,14 +160,14 @@ public class EnemyManagerService
         }
     }
 
-    public void enemyTurn(int turnCount)
+    public async Task enemyTurn(int turnCount)
     {
         foreach (EnemyGameObject enemyGameObject in gameData.currEnemies)
         {
             Enemy currEnemy = enemyGameObject.enemy;
             Card enemyTurn = enemyTurnService.getModifiedEnemyTurn(enemyGameObject);
 
-            for (int i = 0; i < enemyTurn.data.attackMultiplier; i++)
+            for (int j = 0; j < enemyTurn.data.attackMultiplier; j++)
             {
                 playerService.takeHit(enemyTurn.data.attack);
                 if (enemyTurn.data.attack > 0)
@@ -138,6 +186,7 @@ public class EnemyManagerService
             }
             statusService.onTurnOver(enemyGameObject.statusesObject);
             Card newEnemyTurn = enemyTurnService.updateEnemyTurn(currEnemy, turnCount);
+            await Task.Delay(TimeSpan.FromSeconds(0.5));
         }
     }
 

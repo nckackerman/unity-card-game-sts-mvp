@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using System;
+using System.Collections;
 
 public class EnemyGameObject : MonoBehaviour
 {
@@ -8,6 +9,7 @@ public class EnemyGameObject : MonoBehaviour
 
     private GameObject statuses;
     private TextMeshProUGUI enemyBlockIntent;
+    private TextMeshProUGUI otherIntent;
     private TextMeshProUGUI enemyAttackIntent;
     private SpriteRenderer enemySpriteRenderer;
     private Animator enemySpriteAnimator;
@@ -28,8 +30,8 @@ public class EnemyGameObject : MonoBehaviour
         this.enemyHealthBar = new HealthBarObject(enemyPrefab.transform.Find("enemyHealthBarObject").gameObject);
         this.enemyBlockIntent = enemyPrefab.transform.Find("attackIntent").GetComponent<TextMeshProUGUI>();
         this.enemyAttackIntent = enemyPrefab.transform.Find("blockIntent").GetComponent<TextMeshProUGUI>();
+        this.otherIntent = enemyPrefab.transform.Find("otherIntent").GetComponent<TextMeshProUGUI>();
         this.statusesObject = new StatusesObject(enemyPrefab.transform.Find("statusesObject").gameObject, this.gameObject);
-
 
         enemySpriteRenderer = enemyPrefab.GetComponent<SpriteRenderer>();
         enemySpriteAnimator = enemyPrefab.GetComponent<Animator>();
@@ -37,22 +39,6 @@ public class EnemyGameObject : MonoBehaviour
 
         this.enemy = enemy;
         this.initialized = true;
-    }
-
-    public void setPosition()
-    {
-        this.endAttackPos = transform.position;
-        this.startAttackPos = endAttackPos - new Vector2(100, 0);
-
-        Action callback = () =>
-        {
-            transform.position = endAttackPos;
-            this.attacking = false;
-        };
-        this.attackAnimationAction = () =>
-        {
-            moveObject(this.transform, startAttackPos, endAttackPos, 500.0f, callback);
-        };
     }
 
     void Update()
@@ -80,6 +66,11 @@ public class EnemyGameObject : MonoBehaviour
                 if (enemyTurn.data.attackMultiplier > 1)
                 {
                     enemyAttackIntent.text += " x " + enemyTurn.data.attackMultiplier.ToString();
+                }
+                otherIntent.text = "";
+                if (enemyTurn.data.cardToAddToPlayersDecks != null && enemyTurn.data.cardToAddToPlayersDecks.Count > 0)
+                {
+                    otherIntent.text = "Add " + enemyTurn.data.cardToAddToPlayersDecks.Count + " cards to players deck";
                 }
             }
         }
@@ -113,11 +104,27 @@ public class EnemyGameObject : MonoBehaviour
 
     public void attackAnimation()
     {
-        if (attacking)
+        if (this.attacking)
         {
             return;
         }
+        attack();
+        this.attacking = true;
+    }
+
+    public void attack()
+    {
+        this.endAttackPos = transform.position;
+        this.startAttackPos = endAttackPos - new Vector2(100, 0);
         transform.position = startAttackPos;
-        attacking = true;
+        Action callback = () =>
+        {
+            transform.position = endAttackPos;
+            this.attacking = false;
+        };
+        this.attackAnimationAction = () =>
+        {
+            moveObject(this.transform, startAttackPos, endAttackPos, 500.0f, callback);
+        };
     }
 }

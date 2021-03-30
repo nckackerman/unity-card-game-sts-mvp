@@ -34,11 +34,11 @@ public class DeckService
         deckData.discardCards = new List<Card>();
         deckData.hand = new List<Card>();
 
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < 3; i++)
         {
             deckData.campDeckData.campDeckCards.Add(cardTypes.getCardFromEnum(CardTypes.CardEnum.enemy_basic));
-            deckData.campDeckData.campDeckCards.Add(cardTypes.getCardFromEnum(CardTypes.CardEnum.enemy_elite));
         }
+        deckData.campDeckData.campDeckCards.Add(cardTypes.getCardFromEnum(CardTypes.CardEnum.enemy_elite));
     }
 
     //Shouldnt be called directly (normally). This should only be called from cardService.onCardPlayed();

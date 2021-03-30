@@ -15,7 +15,6 @@ public class EnemyService
 
     public void initializeEnemy(EnemyGameObject enemyGameObject)
     {
-        enemyGameObject.setPosition();
         enemyGameObject.enemy.data.initialize();
         enemyTurnService.updateEnemyTurn(enemyGameObject.enemy, 0);
     }

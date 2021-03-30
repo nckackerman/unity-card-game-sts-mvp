@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using System.Threading.Tasks;
 public class FightManagerService
 {
     private SceneUiManager sceneUiManager;
@@ -11,6 +12,7 @@ public class FightManagerService
     private DeckData deckData;
     private CampService campService;
     private EnemyManagerService enemyManagerService;
+    private bool endingTurn = false;
 
     public FightManagerService(
         SceneUiManager sceneUiManager,
@@ -38,6 +40,7 @@ public class FightManagerService
         deckService.initDeck(cardTypes);
         playerService.initialize();
         upgradeService.initUpgrades(upgradeTypes);
+        enemyManagerService.initializeFights();
 
         startFight();
     }
@@ -81,13 +84,20 @@ public class FightManagerService
         }
     }
 
-    public void endTurn()
+    public async void endTurn()
     {
+        if (endingTurn)
+        {
+            Debug.Log("ending earlier since still in loop");
+            return;
+        }
+        endingTurn = true;
         GameData.getInstance().fightData.turnCount++;
         cardUiManager.destroyPlayerHandUi();
 
-        enemyManagerService.enemyTurn(GameData.getInstance().fightData.turnCount);
+        await enemyManagerService.enemyTurn(GameData.getInstance().fightData.turnCount);
         deckService.endTurn();
         playerService.endTurn();
+        endingTurn = false;
     }
 }

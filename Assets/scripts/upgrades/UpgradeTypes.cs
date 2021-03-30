@@ -118,7 +118,10 @@ public class UpgradeTypes
 
             actions.onCombatStartAction = () =>
             {
-                GameData.getInstance().deckService.drawCard();
+                for (int i = 0; i < extraDrawCount; i++)
+                {
+                    GameData.getInstance().deckService.drawCard();
+                }
             };
         }
         else if (upgradeEnum == UpgradeEnum.banana1)

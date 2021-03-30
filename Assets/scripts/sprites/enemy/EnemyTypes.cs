@@ -13,9 +13,10 @@ public class EnemyTypes
     public Enemy getFirstEnemy()
     {
         EnemyTurnData enemyTurnData = new EnemyTurnData();
-        enemyTurnData.baseEnemyTurns.Add(new Card(new CardData(11, 0), new CardActions()));
-        enemyTurnData.baseEnemyTurns.Add(new Card(new CardData(0, 10), new CardActions()));
-        enemyTurnData.baseEnemyTurns.Add(new Card(new CardData(5, 7), new CardActions()));
+        enemyTurnData.baseEnemyTurns.Add(new Card(new CardData(12, 0), new CardActions()));
+        enemyTurnData.baseEnemyTurns.Add(new Card(new CardData(0, 11), new CardActions()));
+        enemyTurnData.baseEnemyTurns.Add(new Card(new CardData(6, 8), new CardActions()));
+        enemyTurnData.baseEnemyTurns.Add(new Card(new CardData(8, 6), new CardActions()));
         EnemyActions enemyActions = new EnemyActions();
         enemyActions.onShuffleAction = () =>
         {
@@ -23,7 +24,7 @@ public class EnemyTypes
         };
 
         //basicEnemy.animatorController = Resources.Load<RuntimeAnimatorController>(spritePath + "MaskManController");
-        EnemyData data = new EnemyData(new HealthBarData(45), enemyTurnData);
+        EnemyData data = new EnemyData(new HealthBarData(40), enemyTurnData);
         Enemy enemy = new Enemy(data, enemyActions);
         return enemy;
     }
@@ -41,9 +42,17 @@ public class EnemyTypes
         multiplierCardData.attackMultiplier = 2;
         multiplierCardData.isEnemycard = true;
         multiplierCardData.description = "Repeat enemy attack " + (multiplierCardData.attackMultiplier - 1) + " times";
-        enemyTurnData.baseEnemyTurns.Add(addCardToDeckTurn(new Card(attackCardData, attackCardActions)));
-        enemyTurnData.baseEnemyTurns.Add(addCardToDeckTurn(new Card(attackCardData, attackCardActions)));
-        enemyTurnData.baseEnemyTurns.Add(addCardToDeckTurn(new Card(multiplierCardData, multiplierCardActions)));
+
+        Card attackTurn1 = addCardToDeckTurn(new Card(attackCardData, attackCardActions));
+        attackTurn1.data.attack = 3;
+        Card attackTurn2 = addCardToDeckTurn(new Card(attackCardData, attackCardActions));
+        attackTurn2.data.attack = 3;
+        Card multiplierTurn = addCardToDeckTurn(new Card(multiplierCardData, multiplierCardActions));
+        multiplierTurn.data.attack = 3;
+
+        enemyTurnData.baseEnemyTurns.Add(attackTurn1);
+        enemyTurnData.baseEnemyTurns.Add(attackTurn2);
+        enemyTurnData.baseEnemyTurns.Add(multiplierTurn);
 
         EnemyActions enemyActions = new EnemyActions();
 
@@ -56,9 +65,19 @@ public class EnemyTypes
 
     public Enemy getThirdEnemy()
     {
-        //TODO: add a card the inhibits player attacking
-        //TODO: add a card that dmgs the enemy for each additional turn this fight
-        return null;
+        EnemyTurnData enemyTurnData = new EnemyTurnData();
+        enemyTurnData.randomAttackOrder = true;
+        enemyTurnData.baseEnemyTurns.Add(new Card(new CardData(3, 6), new CardActions()));
+        enemyTurnData.baseEnemyTurns.Add(new Card(new CardData(6, 3), new CardActions()));
+        enemyTurnData.baseEnemyTurns.Add(new Card(new CardData(8, 0), new CardActions()));
+        EnemyData data = new EnemyData(new HealthBarData(18), enemyTurnData);
+        EnemyActions enemyActions = new EnemyActions();
+        enemyActions.onDeathAction = () =>
+        {
+            //TODO: add vulnerable on death
+        };
+        Enemy enemy = new Enemy(data, enemyActions);
+        return enemy;
     }
 
     public Enemy getBoss()
