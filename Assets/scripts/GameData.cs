@@ -23,7 +23,7 @@ public class GameData
     public UpgradeService upgradeService;
     public Card selectedCard;
     public EnemyTypes enemyTypes;
-    public CampContract currContract;
+    public ContractGameObject currContractGameObject;
     public List<CampContract> availableContracts = new List<CampContract>();
     public List<CardGameObject> selectedCampCards = new List<CardGameObject>();
 

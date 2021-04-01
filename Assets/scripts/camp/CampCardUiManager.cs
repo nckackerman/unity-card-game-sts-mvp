@@ -4,6 +4,7 @@ using TMPro;
 public class CampCardUiManager
 {
     private GameObject cardPrefab;
+    private GameObject contractPrefab;
 
     private GameObject playerCampHand;
     private GameObject campSelectedCards;
@@ -12,12 +13,14 @@ public class CampCardUiManager
 
     public CampCardUiManager(
         GameObject cardPrefab,
+        GameObject contractPrefab,
         GameObject playerCampHand,
         GameObject campSelectedCards,
         TextMeshProUGUI campContractText
     )
     {
         this.cardPrefab = cardPrefab;
+        this.contractPrefab = contractPrefab;
         this.playerCampHand = playerCampHand;
         this.campSelectedCards = campSelectedCards;
         this.campContractText = campContractText;
@@ -26,6 +29,20 @@ public class CampCardUiManager
     public void initialize(CampCardActionsService campCardActionsService)
     {
         this.campCardActionsService = campCardActionsService;
+    }
+
+    public void showCampContract(CampContract campContract)
+    {
+        ContractGameObject contractInstance = getContractGameObject(campContract);
+        contractInstance.transform.SetParent(campSelectedCards.transform, false);
+    }
+
+    public void destroyContractUi()
+    {
+        foreach (Transform child in campSelectedCards.transform)
+        {
+            GameObject.Destroy(child.gameObject);
+        }
     }
 
     public void showCampCardInHand(Card card, int handSize)
@@ -90,5 +107,13 @@ public class CampCardUiManager
         CardGameObject cardGameObject = cardInstance.GetComponent<CardGameObject>();
         cardGameObject.initialize(cardInstance, card);
         return cardGameObject;
+    }
+
+    private ContractGameObject getContractGameObject(CampContract campContract)
+    {
+        GameObject contractInstance = GameObject.Instantiate(contractPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+        ContractGameObject contractGameObject = contractInstance.GetComponent<ContractGameObject>();
+        contractGameObject.initialize(contractInstance, campContract);
+        return contractGameObject;
     }
 }

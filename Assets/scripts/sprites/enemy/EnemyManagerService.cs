@@ -219,9 +219,6 @@ public class EnemyManagerService
             {
                 upgradeUiManager.destroyUpgradeSelectUi();
             }
-
-            List<CardGameObject> cards = GameData.getInstance().selectedCampCards;
-            cards.Remove(cards[0]);
         }
     }
 

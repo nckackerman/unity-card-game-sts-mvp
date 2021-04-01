@@ -54,6 +54,7 @@ public class MainSceneInjectionService : MonoBehaviour
         //prefabs. no dependencies.
         GameObject upgradePrefab = Resources.Load(FilePathUtils.prefabPath + "upgradeObject") as GameObject;
         GameObject cardPrefab = Resources.Load(FilePathUtils.prefabPath + "cardObject") as GameObject;
+        GameObject campContractPrefab = Resources.Load(FilePathUtils.prefabPath + "campContractObject") as GameObject;
         GameObject healthBarPrefab = Resources.Load(FilePathUtils.prefabPath + "healthBarObject") as GameObject;
         GameObject enemyPrefab = Resources.Load(FilePathUtils.prefabPath + "enemyObject") as GameObject;
 
@@ -86,6 +87,7 @@ public class MainSceneInjectionService : MonoBehaviour
         );
         CampCardUiManager campCardUiManager = new CampCardUiManager(
             cardPrefab,
+            campContractPrefab,
             campHandObject,
             selectedCampCards,
             campContractText
@@ -130,7 +132,7 @@ public class MainSceneInjectionService : MonoBehaviour
             upgradeService
         );
         CardService cardService = new CardService(enemyManagerService, playerService, new AudioState(), deckService, enemyService);
-        CampService campService = new CampService(campScene, campSelectionScene, campDeckService);
+        CampService campService = new CampService(campScene, campSelectionScene, campDeckService, cardTypes);
         CardActionsService cardActionsService = new CardActionsService(deckService, playerService, cardService);
         CampCardActionsService campCardActionsService = new CampCardActionsService(campDeckService);
         EnemyManagerService.setInstance(enemyManagerService);

@@ -37,6 +37,16 @@ public class CampDeckService
         }
     }
 
+    public void showContracts(List<CampContract> contracts)
+    {
+
+        campCardUiManager.destroyContractUi();
+        foreach (CampContract campContract in contracts)
+        {
+            campCardUiManager.showCampContract(campContract);
+        }
+    }
+
     public void addCampCardToQueue(CardGameObject cardGameObject)
     {
         List<CardGameObject> selectedCampCards = GameData.getInstance().selectedCampCards;

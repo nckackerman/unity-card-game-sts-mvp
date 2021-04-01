@@ -2,14 +2,22 @@ using System.Collections.Generic;
 
 public class CampContract
 {
-    public List<Fight> fights;
+    public List<Card> encounters;
 
-    public CampContract(List<Fight> fights)
+    public CampContract(List<Card> encounters)
     {
-        this.fights = fights;
+        this.encounters = encounters;
     }
     public string getDescription()
     {
-        return "Fight " + fights.Count + " battles before returning to camp.";
+        string description = "Next " + encounters.Count + " encounters: ";
+        for (int i = 0; i < encounters.Count; i++)
+        {
+            Card curr = encounters[i];
+            string eventDescription = curr.data.campEventType == CampEventType.elite ? "elite" : "regular";
+            description += (i + 1) + ") " + eventDescription;
+            description += "\n";
+        }
+        return description;
     }
 }

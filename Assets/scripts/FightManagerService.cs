@@ -47,11 +47,10 @@ public class FightManagerService
 
     public void confirmCampEvents()
     {
-        List<CardGameObject> selectedCampCards = GameData.getInstance().selectedCampCards;
-        int requiredCampSelection = GameData.getInstance().deckData.campDeckData.maxCampCards;
-        if (selectedCampCards.Count != requiredCampSelection)
+        ContractGameObject currContract = GameData.getInstance().currContractGameObject;
+        if (currContract == null)
         {
-            Debug.Log("camp count needs to be " + requiredCampSelection + ", it is: " + selectedCampCards.Count);
+            Debug.Log("no currContract selected. returning and doing nothing.");
             return;
         }
         campService.discardCampCards();
@@ -60,27 +59,33 @@ public class FightManagerService
 
     public void startFight()
     {
-        if (GameData.getInstance().selectedCampCards.Count == 0)
+        GameData gameData = GameData.getInstance();
+        ContractGameObject currContract = gameData.currContractGameObject;
+        if (gameData.currContractGameObject == null)
         {
             sceneUiManager.showCampScene();
             campService.enterCamp();
-            GameData.getInstance().selectedCampCards = new List<CardGameObject>();
         }
         else
         {
-            List<CardGameObject> campCards = GameData.getInstance().selectedCampCards;
-            Fight fight = enemyManagerService.getFight(campCards[0].card.data.campEventType);
-            GameData.getInstance().fightData.currentFight = fight;
+            Fight fight = enemyManagerService.getFight(currContract.campContract.encounters[gameData.fightData.encounterCount].data.campEventType);
+            gameData.fightData.currentFight = fight;
             enemyManagerService.initializeEnemiesForFight(fight);
 
-            GameData.getInstance().fightData.fightCount++;
-            GameData.getInstance().fightData.turnCount = 0;
+            gameData.fightData.encounterCount++;
+            gameData.fightData.turnCount = 0;
             playerService.startFight();
             deckService.startFight();
 
             upgradeService.triggerCombatStartActions();
 
             sceneUiManager.startFight();
+
+            if (gameData.fightData.encounterCount == gameData.fightData.totalEncounterCount)
+            {
+                gameData.fightData.encounterCount = 0;
+                gameData.currContractGameObject = null;
+            }
         }
     }
 

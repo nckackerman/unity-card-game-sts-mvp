@@ -2419,7 +2419,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 56f4249bdefceb34a8791ea22950e002, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.459
+  m_Volume: 0
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -2553,7 +2553,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -310, y: -109.16}
+  m_AnchoredPosition: {x: -422, y: -287.38}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &760658926
@@ -3050,6 +3050,11 @@ PrefabInstance:
     - target: {fileID: 37732689907723818, guid: 02087a55a9d891043933b4e728d1dfc2,
         type: 3}
       propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 37732689907723818, guid: 02087a55a9d891043933b4e728d1dfc2,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -5578,15 +5583,15 @@ RectTransform:
   m_GameObject: {fileID: 1216708888}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 0}
   m_Children: []
   m_Father: {fileID: 1229137674}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 2.6, y: 181}
-  m_SizeDelta: {x: 977.27, y: 216.04102}
+  m_AnchoredPosition: {x: 2.6, y: 64.931}
+  m_SizeDelta: {x: 977.27, y: 448.17596}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1216708890
 MonoBehaviour:
@@ -5640,15 +5645,15 @@ MonoBehaviour:
   m_Padding:
     m_Left: 20
     m_Right: 20
-    m_Top: 0
-    m_Bottom: 0
+    m_Top: 10
+    m_Bottom: 10
   m_ChildAlignment: 4
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 135, y: 185}
-  m_Spacing: {x: 20, y: 0}
-  m_Constraint: 2
-  m_ConstraintCount: 1
+  m_CellSize: {x: 175, y: 420}
+  m_Spacing: {x: 10, y: 10}
+  m_Constraint: 1
+  m_ConstraintCount: 5
 --- !u!1 &1229137673
 GameObject:
   m_ObjectHideFlags: 0
@@ -8003,7 +8008,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 302, y: -109.16}
+  m_AnchoredPosition: {x: -302, y: -287.38}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1809416193
@@ -8537,7 +8542,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 528, y: -61.559998}
+  m_AnchoredPosition: {x: 512, y: -63.520996}
   m_SizeDelta: {x: 100, y: 62.86693}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1903084476
