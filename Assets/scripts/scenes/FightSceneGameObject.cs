@@ -15,7 +15,7 @@ public class FightSceneGameObject : MonoBehaviour
     private PlayerData playerData;
     private bool initalized = false;
 
-    public void initalize(GameObject fightScene, DeckData deckData, PlayerData playerData)
+    public void initalize(GameObject fightScene)
     {
         this.fightScene = fightScene;
 
@@ -26,8 +26,8 @@ public class FightSceneGameObject : MonoBehaviour
         playerExtraDrawText = GameObject.Find("extraDrawText").GetComponent<TextMeshProUGUI>();
         playerMemories = GameObject.Find("memoryCountText").GetComponent<TextMeshProUGUI>();
 
-        this.deckData = deckData;
-        this.playerData = playerData;
+        this.deckData = GameData.getInstance().deckData;
+        this.playerData = GameData.getInstance().playerGameObject.playerData;
         playerData.initialize();
 
         fightScene.SetActive(false);

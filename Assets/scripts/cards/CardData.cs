@@ -14,7 +14,7 @@ public class CardData
     public bool exhaust = false;
     public int temporaryDmgBoost = 0;
     public EnemyGameObject targetedEnemy = null;
-    public CampEventType campEventType;
+    public CampEncounter campEventType;
 
     public List<Card> cardToAddToPlayersDecks = new List<Card>();
 

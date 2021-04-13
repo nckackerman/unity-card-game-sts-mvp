@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
-using System.Threading.Tasks;
+﻿using UnityEngine;
+using TMPro;
 public class FightManagerService
 {
     private SceneUiManager sceneUiManager;
@@ -9,9 +8,9 @@ public class FightManagerService
     private UpgradeUiManager upgradeUiManager;
     private UpgradeService upgradeService;
     private DeckService deckService;
-    private DeckData deckData;
     private CampService campService;
     private EnemyManagerService enemyManagerService;
+    private EventManagerService eventManagerService;
     private bool endingTurn = false;
 
     public FightManagerService(
@@ -20,19 +19,19 @@ public class FightManagerService
         PlayerService playerService,
         UpgradeUiManager upgradeUiManager,
         DeckService deckService,
-        DeckData deckData,
         CampService campService,
         UpgradeService upgradeService,
-        EnemyManagerService enemyManagerService)
+        EnemyManagerService enemyManagerService,
+        EventManagerService eventManagerService)
     {
         this.sceneUiManager = sceneUiManager;
         this.cardUiManager = cardUiManager;
         this.playerService = playerService;
         this.deckService = deckService;
-        this.deckData = deckData;
         this.campService = campService;
         this.upgradeService = upgradeService;
         this.enemyManagerService = enemyManagerService;
+        this.eventManagerService = eventManagerService;
     }
 
     public void startNewRun(UpgradeTypes upgradeTypes, CardTypes cardTypes)
@@ -41,6 +40,9 @@ public class FightManagerService
         playerService.initialize();
         upgradeService.initUpgrades(upgradeTypes);
         enemyManagerService.initializeFights();
+
+        EventTypes eventTypes = new EventTypes(eventManagerService, playerService);
+        eventManagerService.initializeEvents(eventTypes);
 
         startFight();
     }
@@ -68,18 +70,31 @@ public class FightManagerService
         }
         else
         {
-            Fight fight = enemyManagerService.getFight(currContract.campContract.encounters[gameData.fightData.encounterCount].data.campEventType);
-            gameData.fightData.currentFight = fight;
-            enemyManagerService.initializeEnemiesForFight(fight);
+            CampEncounter campEncounter = currContract.campContract.encounters[gameData.fightData.encounterCount];
+            if (campEncounter == CampEncounter.campFire || campEncounter == CampEncounter.campEvent)
+            {
+                sceneUiManager.showCampScene();
+                sceneUiManager.showEventScene();
+                EventTypes eventTypes = new EventTypes(eventManagerService, playerService);
+                Event gameEvent = eventManagerService.getEvent(campEncounter);
+                eventManagerService.showEvent(gameEvent);
+            }
+            else
+            {
+                Fight fight = enemyManagerService.getFight(campEncounter);
+                gameData.fightData.currentFight = fight;
+                enemyManagerService.initializeEnemiesForFight(fight);
+
+                playerService.startFight();
+                deckService.startFight();
+
+                upgradeService.triggerCombatStartActions();
+
+                sceneUiManager.startFight();
+            }
 
             gameData.fightData.encounterCount++;
             gameData.fightData.turnCount = 0;
-            playerService.startFight();
-            deckService.startFight();
-
-            upgradeService.triggerCombatStartActions();
-
-            sceneUiManager.startFight();
 
             if (gameData.fightData.encounterCount == gameData.fightData.totalEncounterCount)
             {

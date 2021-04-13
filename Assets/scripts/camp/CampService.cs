@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using TMPro;
 
 public class CampService
 {
@@ -10,18 +9,18 @@ public class CampService
     public GameObject campItemList;
     public GameObject campBackgroundMask;
     public GameObject campItem;
-    public CampDeckService campDeckService;
+    public CampContractService campContractService;
     public CardTypes cardTypes;
     private static GameObject campItemPrefab = Resources.Load(FilePathUtils.prefabPath + "campItemObject") as GameObject;
 
-    public CampService(GameObject campScene, GameObject campSelectionScene, CampDeckService campDeckService, CardTypes cardTypes)
+    public CampService(GameObject campScene, GameObject campSelectionScene, CampContractService campContractService, CardTypes cardTypes)
     {
         this.campScene = campScene;
         this.campSelectionScene = campSelectionScene;
         this.campItemList = GameObject.Find("campItemList");
         this.campItem = GameObject.Find("campItem");
         this.campBackgroundMask = GameObject.Find("CampBackgroundMask");
-        this.campDeckService = campDeckService;
+        this.campContractService = campContractService;
         this.cardTypes = cardTypes;
 
         hideCampFightList();
@@ -37,33 +36,8 @@ public class CampService
 
     public void enterCamp()
     {
-        List<CampContract> contracts = generateCampContracts();
-        campDeckService.showContracts(contracts);
-    }
-
-    private List<CampContract> generateCampContracts()
-    {
-        int numEncounters = GameData.getInstance().fightData.totalEncounterCount;
-        int totalContracts = GameData.getInstance().fightData.contractCount;
-        List<CampContract> contracts = new List<CampContract>();
-        for (int i = 0; i < totalContracts; i++)
-        {
-            List<Card> encounters = new List<Card>();
-            for (int j = 0; j < numEncounters; j++)
-            {
-                int coinFlip = Random.Range(0, 2);
-                if (coinFlip == 0)
-                {
-                    encounters.Add(cardTypes.getCardFromEnum(CardTypes.CardEnum.enemy_basic));
-                }
-                else
-                {
-                    encounters.Add(cardTypes.getCardFromEnum(CardTypes.CardEnum.enemy_elite));
-                }
-            }
-            contracts.Add(new CampContract(encounters));
-        }
-        return contracts;
+        List<CampContract> contracts = campContractService.generateCampContracts();
+        campContractService.showContracts(contracts);
     }
 
     public void showScene()

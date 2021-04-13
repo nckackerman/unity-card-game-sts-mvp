@@ -2,9 +2,9 @@ using System.Collections.Generic;
 
 public class CampContract
 {
-    public List<Card> encounters;
+    public List<CampEncounter> encounters;
 
-    public CampContract(List<Card> encounters)
+    public CampContract(List<CampEncounter> encounters)
     {
         this.encounters = encounters;
     }
@@ -13,8 +13,24 @@ public class CampContract
         string description = "Next " + encounters.Count + " encounters: ";
         for (int i = 0; i < encounters.Count; i++)
         {
-            Card curr = encounters[i];
-            string eventDescription = curr.data.campEventType == CampEventType.elite ? "elite" : "regular";
+            CampEncounter encounter = encounters[i];
+            string eventDescription = "";
+            if (encounter == CampEncounter.elite)
+            {
+                eventDescription = "elite";
+            }
+            else if (encounter == CampEncounter.basic)
+            {
+                eventDescription = "regular";
+            }
+            else if (encounter == CampEncounter.campFire)
+            {
+                eventDescription = "campfire";
+            }
+            else if (encounter == CampEncounter.campEvent)
+            {
+                eventDescription = "event";
+            }
             description += (i + 1) + ") " + eventDescription;
             description += "\n";
         }

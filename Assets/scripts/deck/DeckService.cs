@@ -10,11 +10,11 @@ public class DeckService
     public PlayerService playerService;
     public EnemyManagerService enemyManagerService;
 
-    public DeckService(DeckData deckData, CardUiManager cardUiManager, PlayerService playerService)
+    public DeckService(CardUiManager cardUiManager, PlayerService playerService)
     {
-        this.deckData = deckData;
         this.cardUiManager = cardUiManager;
         this.playerService = playerService;
+        this.deckData = GameData.getInstance().deckData;
     }
 
     public void initialize(EnemyManagerService enemyManagerService)
@@ -33,12 +33,6 @@ public class DeckService
         }
         deckData.discardCards = new List<Card>();
         deckData.hand = new List<Card>();
-
-        for (int i = 0; i < 3; i++)
-        {
-            deckData.campDeckData.campDeckCards.Add(cardTypes.getCardFromEnum(CardTypes.CardEnum.enemy_basic));
-        }
-        deckData.campDeckData.campDeckCards.Add(cardTypes.getCardFromEnum(CardTypes.CardEnum.enemy_elite));
     }
 
     //Shouldnt be called directly (normally). This should only be called from cardService.onCardPlayed();

@@ -8,6 +8,14 @@ This is a for-fun project to build a POC/MVP for a deckbuilder game in [Unity-2d
 Absolutely! Please reach out to nckackerman@gmail.com for any question about this code. Happy to help however I can :)
 
 ## Updates
+
+### 4/1/2021
+- Added event screen and a camp-event where player can rest and heal between fights.
+
+Whats next:
+- Need to expand content and make an interesting (but short) game loop that ends with a boss fight. Will want to do another larger refactoring before expanding content though.
+- Move distribuition off of AWS/web and onto steam
+
 ### 3/25/2021
 - create the basics for a "camp screen" where player can spend earned resources and plan out the next few encounters before returning to camp and continue the loop.
 - This feels like a good milestone for the project. Most large pieces are in place and the loop/skeleton for the game is in tact.

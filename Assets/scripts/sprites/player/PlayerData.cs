@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-public class PlayerData
+﻿public class PlayerData
 {
     public HealthBarData healthBarData = new HealthBarData(0, 0, 0);
     public int currEnergy;

@@ -7,12 +7,12 @@ public class PlayerService
     public SceneUiManager sceneUiManager;
     public StatusService statusService;
     public PlayerGameObject playerGameObject;
-    public PlayerService(PlayerData playerData, SceneUiManager sceneUiManager, StatusService statusService, PlayerGameObject playerGameObject)
+    public PlayerService(SceneUiManager sceneUiManager, StatusService statusService, PlayerGameObject playerGameObject)
     {
-        this.playerData = playerData;
         this.sceneUiManager = sceneUiManager;
         this.statusService = statusService;
         this.playerGameObject = playerGameObject;
+        this.playerData = GameData.getInstance().playerGameObject.playerData;
     }
 
     public void initialize()

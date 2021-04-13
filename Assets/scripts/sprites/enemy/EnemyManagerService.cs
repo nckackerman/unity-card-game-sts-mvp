@@ -108,10 +108,10 @@ public class EnemyManagerService
         return fight;
     }
 
-    public Fight getFight(CampEventType campEventType)
+    public Fight getFight(CampEncounter campEncounter)
     {
         Fight fight = new Fight();
-        if (campEventType == CampEventType.basic)
+        if (campEncounter == CampEncounter.basic)
         {
             fight = easyFights[basicFightCounter];
             fight.cardOnComplete = true;
@@ -121,7 +121,7 @@ public class EnemyManagerService
                 basicFightCounter = 0;
             }
         }
-        else if (campEventType == CampEventType.elite)
+        else if (campEncounter == CampEncounter.elite)
         {
             fight = eliteFights[eliteFightCounter];
             fight.upgradeOnComplete = true;
@@ -133,7 +133,7 @@ public class EnemyManagerService
         }
         else
         {
-            throw new System.Exception("invalid status enum provided: " + campEventType);
+            throw new System.Exception("invalid status enum provided: " + campEncounter);
         }
         return fight;
     }

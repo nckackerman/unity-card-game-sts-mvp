@@ -16,8 +16,8 @@ public class GameData
     public UpgradeGameData upgradeGameData = new UpgradeGameData();
     public List<EnemyGameObject> currEnemies = new List<EnemyGameObject>();
     public FightData fightData = new FightData();
+    public DeckData deckData = new DeckData();
     public PlayerGameObject playerGameObject;
-    public DeckData deckData;
     public DeckService deckService;
     public PlayerService playerService;
     public UpgradeService upgradeService;

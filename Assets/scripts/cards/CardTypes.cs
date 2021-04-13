@@ -28,9 +28,7 @@ public class CardTypes
         shatter,
         hiddenDaggers,
         dagger,
-        reload,
-        enemy_basic,
-        enemy_elite
+        reload
     }
 
     public List<CardEnum> obtainableCards;
@@ -42,8 +40,6 @@ public class CardTypes
 
         obtainableCards.Remove(CardEnum.smack);
         obtainableCards.Remove(CardEnum.defend);
-        obtainableCards.Remove(CardEnum.enemy_basic);
-        obtainableCards.Remove(CardEnum.enemy_elite);
     }
 
     public Card getCardFromEnum(CardEnum cardEnum)
@@ -357,28 +353,6 @@ public class CardTypes
             };
             data.description = actions.getModifiedDescription(data);
             data.name = "reload";
-        }
-        else if (cardEnum == CardEnum.enemy_basic)
-        {
-            data.campEventType = CampEventType.basic;
-            actions.getDescriptionAction = () =>
-            {
-                return "Fight 1 enemy, get a card as an reward";
-
-            };
-            data.description = actions.getModifiedDescription(data);
-            data.name = "basic enemy";
-        }
-        else if (cardEnum == CardEnum.enemy_elite)
-        {
-            data.campEventType = CampEventType.elite;
-            actions.getDescriptionAction = () =>
-            {
-                return "Fight 1 elite, get an upgrade as an reward";
-
-            };
-            data.description = actions.getModifiedDescription(data);
-            data.name = "elite enemy";
         }
         else
         {

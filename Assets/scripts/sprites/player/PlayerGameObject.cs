@@ -17,10 +17,10 @@ public class PlayerGameObject : MonoBehaviour
     bool blocking = false;
     float step = 0;
 
-    public void initalize(GameObject playerObject, PlayerData playerData)
+    public void initalize(GameObject playerObject)
     {
         this.playerInstance = playerObject;
-        this.playerData = playerData;
+        this.playerData = new PlayerData();
         this.healthBar = new HealthBarObject(playerObject.transform.Find("playerHealthBarObject").gameObject);
         this.statusesObject = new StatusesObject(playerObject.transform.Find("statusesObject").gameObject, this.gameObject);
 

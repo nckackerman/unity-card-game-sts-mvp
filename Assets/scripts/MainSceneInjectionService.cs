@@ -41,10 +41,16 @@ public class MainSceneInjectionService : MonoBehaviour
     private GameObject gameOverScene;
     private GameObject startScene;
     private GameObject campScene;
-    private GameObject selectedCampCards;
+    private GameObject eventScene;
+    private GameObject campContracts;
     private GameObject campSelectionScene;
     private GameObject upgradeList;
     private TextMeshProUGUI campContractText;
+
+    private GameObject eventBoard;
+    private GameObject eventBoardButtons;
+    private TextMeshProUGUI campTitleText;
+    private TextMeshProUGUI campText;
 
     void Start()
     {
@@ -57,12 +63,11 @@ public class MainSceneInjectionService : MonoBehaviour
         GameObject campContractPrefab = Resources.Load(FilePathUtils.prefabPath + "campContractObject") as GameObject;
         GameObject healthBarPrefab = Resources.Load(FilePathUtils.prefabPath + "healthBarObject") as GameObject;
         GameObject enemyPrefab = Resources.Load(FilePathUtils.prefabPath + "enemyObject") as GameObject;
+        GameObject eventButtonPrefab = Resources.Load(FilePathUtils.prefabPath + "eventButtonObject") as GameObject;
 
         //Data classes. no dependencies
         GameData gameData = new GameData();
         GameData.setInstance(gameData);
-        PlayerData playerData = new PlayerData();
-        DeckData deckData = new DeckData();
 
         //Ui manager, only dependencies are GameObjects
         CardUiManager cardUiManager = new CardUiManager(
@@ -78,19 +83,17 @@ public class MainSceneInjectionService : MonoBehaviour
             victoryScene,
             cardListScene,
             fightSceneObject,
-            campScene
+            campScene,
+            eventScene
         );
         UpgradeUiManager upgradeUiManager = new UpgradeUiManager(
             upgradeSelect,
             upgradePrefab,
             upgradeList
         );
-        CampCardUiManager campCardUiManager = new CampCardUiManager(
-            cardPrefab,
+        CampContractUiManager campContractUiManager = new CampContractUiManager(
             campContractPrefab,
-            campHandObject,
-            selectedCampCards,
-            campContractText
+            campContracts
         );
 
         //Types
@@ -101,9 +104,11 @@ public class MainSceneInjectionService : MonoBehaviour
 
         //GameObjects
         PlayerGameObject playerGameObject = playerObject.GetComponent<PlayerGameObject>();
-        playerGameObject.initalize(playerObject, playerData);
+        playerGameObject.initalize(playerObject);
+        gameData.playerGameObject = playerGameObject;
+
         FightSceneGameObject fightSceneGameObject = fightSceneObject.GetComponent<FightSceneGameObject>();
-        fightSceneGameObject.initalize(fightSceneObject, deckData, playerData);
+        fightSceneGameObject.initalize(fightSceneObject);
 
         //Services
         UpgradeService upgradeService = new UpgradeService();
@@ -113,9 +118,9 @@ public class MainSceneInjectionService : MonoBehaviour
         EnemyService enemyService = new EnemyService(enemyTurnService, statusService);
         CardGeneratorService cardGeneratorService = new CardGeneratorService(cardTypes);
 
-        PlayerService playerService = new PlayerService(playerData, sceneUiManager, statusService, playerGameObject);
-        DeckService deckService = new DeckService(deckData, cardUiManager, playerService);
-        CampDeckService campDeckService = new CampDeckService(campCardUiManager, deckService);
+        PlayerService playerService = new PlayerService(sceneUiManager, statusService, playerGameObject);
+        DeckService deckService = new DeckService(cardUiManager, playerService);
+        CampContractService campContractService = new CampContractService(campContractUiManager);
         EnemyManagerService enemyManagerService = new EnemyManagerService(
             enemyPrefab,
             enemyContainer,
@@ -132,32 +137,36 @@ public class MainSceneInjectionService : MonoBehaviour
             upgradeService
         );
         CardService cardService = new CardService(enemyManagerService, playerService, new AudioState(), deckService, enemyService);
-        CampService campService = new CampService(campScene, campSelectionScene, campDeckService, cardTypes);
+        CampService campService = new CampService(campScene, campSelectionScene, campContractService, cardTypes);
         CardActionsService cardActionsService = new CardActionsService(deckService, playerService, cardService);
-        CampCardActionsService campCardActionsService = new CampCardActionsService(campDeckService);
         EnemyManagerService.setInstance(enemyManagerService);
 
         UpgradeTypes upgradeTypes = new UpgradeTypes(playerService);
 
+        EventManagerService eventManagerService = new EventManagerService(
+            eventBoard,
+            eventBoardButtons,
+            eventButtonPrefab,
+            campTitleText,
+            campText
+        );
         FightManagerService fightManagerService = new FightManagerService(
             sceneUiManager,
             cardUiManager,
             playerService,
             upgradeUiManager,
             deckService,
-            deckData,
             campService,
             upgradeService,
-            enemyManagerService
+            enemyManagerService,
+            eventManagerService
         );
+        eventManagerService.setFightService(fightManagerService);
         cardUiManager.initialize(cardActionsService);
-        campCardUiManager.initialize(campCardActionsService);
         upgradeUiManager.initialize(upgradeService);
         deckService.initialize(enemyManagerService);
 
         //Initialize game data class
-        gameData.playerGameObject = playerGameObject;
-        gameData.deckData = deckData;
         gameData.deckService = deckService;
         gameData.playerService = playerService;
         gameData.upgradeService = upgradeService;
@@ -172,6 +181,7 @@ public class MainSceneInjectionService : MonoBehaviour
         closeCampListButton.onClick.AddListener(() => campService.hideCampFightList());
         leaveCampButton.onClick.AddListener(() => fightManagerService.confirmCampEvents());
 
+        DeckData deckData = gameData.deckData;
         addEventTrigger(showDeckObject).callback.AddListener((data) => cardUiManager.showCardPile(deckData.deckCards));
         addEventTrigger(showDiscardObject).callback.AddListener((data) => cardUiManager.showCardPile(deckData.discardCards));
         addEventTrigger(showTrashObject).callback.AddListener((data) => cardUiManager.showCardPile(deckData.trash));
@@ -194,7 +204,7 @@ public class MainSceneInjectionService : MonoBehaviour
         playerHandObject = GameObject.Find("playerHand");
         campHandObject = GameObject.Find("campHand");
         campContractText = GameObject.Find("campContractText").GetComponent<TextMeshProUGUI>();
-        selectedCampCards = GameObject.Find("selectedCampCardsObject");
+        campContracts = GameObject.Find("selectedCampCardsObject");
         upgradeList = GameObject.Find("UpgradeList");
         startNewRunButton = GameObject.Find("StartNewRunButton").GetComponent<Button>();
         nextFightButton = GameObject.Find("NextFightButton").GetComponent<Button>();
@@ -207,6 +217,10 @@ public class MainSceneInjectionService : MonoBehaviour
         showDiscardObject = GameObject.Find("discardClickable");
         showTrashObject = GameObject.Find("trashClickable");
         extraDrawObject = GameObject.Find("ExtraDrawObject");
+        eventBoard = GameObject.Find("campItemList");
+        eventBoardButtons = GameObject.Find("campSceneButtons");
+        campTitleText = (GameObject.Find("campListTitle")).GetComponent<TextMeshProUGUI>();
+        campText = (GameObject.Find("campListDescription")).GetComponentInChildren<TextMeshProUGUI>();
 
         //sprites
         enemyContainer = GameObject.Find("enemyContainer");
@@ -228,6 +242,8 @@ public class MainSceneInjectionService : MonoBehaviour
         cardListScene = GameObject.Find("cardListScene");
         cardListGrid = GameObject.Find("cardList");
         cardListScene.SetActive(false);
+        eventScene = GameObject.Find("eventScene");
+        eventScene.SetActive(false);
     }
 
     private EventTrigger.Entry addEventTrigger(GameObject gameObject)
